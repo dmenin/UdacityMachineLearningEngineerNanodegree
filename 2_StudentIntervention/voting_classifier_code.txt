@@ -1,0 +1,34 @@
+# from sklearn.ensemble import VotingClassifier
+# from sklearn.grid_search import GridSearchCV
+# clf1 = KNeighborsClassifier(n_jobs = -1)
+# clf2 = svm.SVC(probability=True) #probability=True is necessary for the soft voting 
+# clf3 = GaussianNB()
+# clf4 = RandomForestClassifier()
+
+# eclf = VotingClassifier(estimators=
+#                         [
+#                             ('knn', clf1),
+#                             ('svm', clf2),
+#                             ('gnb', clf3),
+#                             ('rfc', clf4),
+#                         ], voting='soft')
+
+
+# params = {'knn__n_neighbors': [4,5,6],
+#           'knn__weights'   : ['uniform','distance'],
+#           'knn__algorithm' : ['ball_tree', 'kd_tree', 'kd_tree', 'brute'],
+#           'knn__leaf_size' : [10,20,30,35],
+#           'knn__metric'    : ['minkowski', 'manhattan', 'euclidean'],
+         
+#           'svm__kernel'  : ['linear', 'rbf'],
+#           'svm__gamma': [1e-3, 1e-4],
+#           'svm__C': [0.01, 0.1,1, 10],
+          
+#           'rfc__n_estimators' : [10,20,30],
+#           'rfc__max_features' : [5,7,10,15],
+#           'rfc__min_samples_split' : [2,4,6] 
+#          }
+        
+# grid = GridSearchCV(estimator=eclf, param_grid=params, cv=5)
+# grid = grid.fit(X_all, y_all)
+# print grid.best_estimator_

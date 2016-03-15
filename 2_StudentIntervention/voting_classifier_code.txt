@@ -1,6 +1,6 @@
 # from sklearn.ensemble import VotingClassifier
 # from sklearn.grid_search import GridSearchCV
-# clf1 = KNeighborsClassifier(n_jobs = -1)
+# clf1 = KNeighborsClassifier()
 # clf2 = svm.SVC(probability=True) #probability=True is necessary for the soft voting 
 # clf3 = GaussianNB()
 # clf4 = RandomForestClassifier()

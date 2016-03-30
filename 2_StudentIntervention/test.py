@@ -70,8 +70,8 @@ s =200
 r = []
 for i in range (1,100,1):
     #clf = RandomForestClassifier(random_state = i, n_estimators=10) #happens
-    clf = ExtraTreesClassifier(random_state = i, n_estimators=300) #hapens
-    #clf = DecisionTreeClassifier() #hapens
+    #clf = ExtraTreesClassifier(random_state = i, n_estimators=300) #hapens
+    clf = DecisionTreeClassifier(random_state = i) #hapens
 
 
 
@@ -79,7 +79,7 @@ for i in range (1,100,1):
     #clf = GaussianNB()  doesnt happen
     #clf = svm.SVC(random_state = i) #has random state but always produces the same result, no matter the value
     #clf = AdaBoostClassifier() #has random state but always produces the same result, no matter the value
-    #clf  = GradientBoostingClassifier(random_state = 123)#has random state but always produces the same result, no matter the value
+    #clf = GradientBoostingClassifier(random_state = 123)#has random state but always produces the same result, no matter the value
 
     
         
@@ -110,11 +110,12 @@ n_estimators,   min(F1Score),  max(F1Score),   diff
 300:            0.753424657534 0.791666666667  0.03
 1000:           0.753424657534 0.794520547945  0.04
 
-10:             0.614173228346 0.779411764706 0.16      
-100:            0.715328467153 0.794326241135 0.07
-        
-        
-        
+#ExtraTreesClassifier
+10:             0.614173228346 0.779411764706  0.16      
+100:            0.715328467153 0.794326241135  0.07
+300:            0.719424460432 0.769230769231  0.04
+
+
         
         
         

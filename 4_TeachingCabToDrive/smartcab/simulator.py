@@ -38,7 +38,7 @@ class Simulator(object):
         self.screen = pygame.display.set_mode(self.size)
 
         self.agent_sprite_size = (32, 32)
-        self.agent_circle_radius = 5  # radius of circle, when using simple representation
+        self.agent_circle_radius = 10  # radius of circle, when using simple representation
         for agent in self.env.agent_states:
             agent._sprite = pygame.transform.smoothscale(pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
             agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
@@ -72,6 +72,7 @@ class Simulator(object):
                         self.pause()
 
                     # Update environment
+                    #print self.current_time,self.last_updated,self.update_delay
                     if self.current_time - self.last_updated >= self.update_delay:
                         self.env.step()
                         self.last_updated = self.current_time
@@ -95,6 +96,7 @@ class Simulator(object):
         # Draw elements
         # * Static elements
         for road in self.env.roads:
+            #pygame.draw.line(self.screen, self.road_color, (road[0][0] * self.env.block_size, road[0][1] * self.env.block_size), (road[1][0] * self.env.block_size, road[1][1] * self.env.block_size), self.road_width)
             pygame.draw.line(self.screen, self.road_color, (road[0][0] * self.env.block_size, road[0][1] * self.env.block_size), (road[1][0] * self.env.block_size, road[1][1] * self.env.block_size), self.road_width)
 
         for intersection, traffic_light in self.env.intersections.iteritems():

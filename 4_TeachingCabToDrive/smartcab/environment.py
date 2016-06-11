@@ -8,7 +8,7 @@ TRAFIL_LIGHTS_UPDATE_EACH = 5 #periods
 
 class TrafficLight(object):
     """A traffic light that switches periodically."""
-
+    
     valid_states = [True, False]  # True = NS open, False = EW open
 
     def __init__(self, state=None, period=None):
@@ -23,8 +23,8 @@ class TrafficLight(object):
         if t - self.last_updated >= self.period:
             self.state = not self.state  # assuming state is boolean
             self.last_updated = t
-
-
+            
+            
 class Environment(object):
     """Environment within which all agents operate."""
 
@@ -48,7 +48,7 @@ class Environment(object):
 		
         for x in xrange(self.bounds[0], self.bounds[2] + 1):
             for y in xrange(self.bounds[1], self.bounds[3] + 1):
-                self.intersections[(x, y)] = TrafficLight(period=TRAFIL_LIGHTS_UPDATE_EACH)  # a traffic light at each intersection
+                self.intersections[(x, y)] = TrafficLight(period=TRAFIL_LIGHTS_UPDATE_EACH)           
 
         for a in self.intersections:
             for b in self.intersections:
@@ -59,8 +59,9 @@ class Environment(object):
 
         # Dummy agents
         self.num_dummies = 1  # no. of dummy agents
-        for i in xrange(self.num_dummies):
+        for i in xrange(self.num_dummies):         
             self.create_agent(DummyAgent)
+            #TypeError: 'DummyAgent' object is not callable
 
         # Primary agent
         self.primary_agent = None  # to be set explicitly
@@ -68,7 +69,8 @@ class Environment(object):
 
     def create_agent(self, agent_class, *args, **kwargs):
         agent = agent_class(self, *args, **kwargs)
-        self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
+#        self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
+        self.agent_states[agent] = {'location': (2, 2), 'heading': (0, 1)}
         return agent
 
     def set_primary_agent(self, agent, enforce_deadline=False):
@@ -126,10 +128,16 @@ class Environment(object):
     def sense(self, agent):
         assert agent in self.agent_states, "Unknown agent!"
 
-        state = self.agent_states[agent]
+        state = self.agent_states[agent]    
         location = state['location']
         heading = state['heading']
-        light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
+
+        
+        #AQUIII
+        try:
+            light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
+        except:
+            light = 'green'
 
         # Populate oncoming, left, right
         oncoming = None
@@ -161,7 +169,10 @@ class Environment(object):
         state = self.agent_states[agent]
         location = state['location']
         heading = state['heading']
-        light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
+        try:
+            light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
+        except:
+            light = 'green'       
 
         # Move agent if within bounds and obeys traffic rules
         reward = 0  # reward/penalty
@@ -206,6 +217,7 @@ class Environment(object):
         return abs(b[0] - a[0]) + abs(b[1] - a[1])
 
 
+
 class Agent(object):
     """Base class for all agents."""
 
@@ -228,6 +240,8 @@ class Agent(object):
         return self.next_waypoint
 
 
+
+
 class DummyAgent(Agent):
     color_choices = ['blue', 'cyan', 'magenta', 'orange']
 
@@ -238,6 +252,7 @@ class DummyAgent(Agent):
 
     def update(self, t):
         inputs = self.env.sense(self)
+        #print inputs
 
         action_okay = True
         if self.next_waypoint == 'right':

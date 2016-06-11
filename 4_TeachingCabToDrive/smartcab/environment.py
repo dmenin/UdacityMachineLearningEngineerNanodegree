@@ -1,8 +1,10 @@
 import time
 import random
 from collections import OrderedDict
-
 from simulator import Simulator
+
+
+TRAFIL_LIGHTS_UPDATE_EACH = 5 #periods
 
 class TrafficLight(object):
     """A traffic light that switches periodically."""
@@ -14,7 +16,7 @@ class TrafficLight(object):
         self.period = period if period is not None else random.choice([3, 4, 5])
         self.last_updated = 0
 
-    def reset(self):
+    def reset(self): #called just once
         self.last_updated = 0
 
     def update(self, t):
@@ -30,10 +32,11 @@ class Environment(object):
     valid_inputs = {'light': TrafficLight.valid_states, 'oncoming': valid_actions, 'left': valid_actions, 'right': valid_actions}
     valid_headings = [(1, 0), (0, -1), (-1, 0), (0, 1)]  # ENWS
 
+    
     def __init__(self):
         self.done = False
         self.t = 0
-        self.agent_states = OrderedDict()
+        self.agent_states = OrderedDict() # Stores the dummy agents
         self.status_text = ""
 
         # Road network
@@ -42,9 +45,10 @@ class Environment(object):
         self.block_size = 100
         self.intersections = OrderedDict()
         self.roads = []
+		
         for x in xrange(self.bounds[0], self.bounds[2] + 1):
             for y in xrange(self.bounds[1], self.bounds[3] + 1):
-                self.intersections[(x, y)] = TrafficLight()  # a traffic light at each intersection
+                self.intersections[(x, y)] = TrafficLight(period=TRAFIL_LIGHTS_UPDATE_EACH)  # a traffic light at each intersection
 
         for a in self.intersections:
             for b in self.intersections:

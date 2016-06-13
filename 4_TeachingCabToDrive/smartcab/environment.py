@@ -94,6 +94,9 @@ class Environment(object):
             start = random.choice(self.intersections.keys())
             destination = random.choice(self.intersections.keys())
 
+        start = (1,1)
+        destination = (8,6)            
+
         start_heading = random.choice(self.valid_headings)
         deadline = self.compute_dist(start, destination) * 5
         print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
@@ -238,9 +241,7 @@ class Agent(object):
 
     def get_next_waypoint(self):
         return self.next_waypoint
-
-
-
+        
 
 class DummyAgent(Agent):
     color_choices = ['blue', 'cyan', 'magenta', 'orange']

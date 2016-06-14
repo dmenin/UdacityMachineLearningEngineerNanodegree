@@ -28,6 +28,7 @@ class TrafficLight(object):
 class Environment(object):
     """Environment within which all agents operate."""
 
+
     valid_actions = [None, 'forward', 'left', 'right']
     valid_inputs = {'light': TrafficLight.valid_states, 'oncoming': valid_actions, 'left': valid_actions, 'right': valid_actions}
     valid_headings = [(1, 0), (0, -1), (-1, 0), (0, 1)]  # ENWS
@@ -48,7 +49,7 @@ class Environment(object):
 		
         for x in xrange(self.bounds[0], self.bounds[2] + 1):
             for y in xrange(self.bounds[1], self.bounds[3] + 1):
-                self.intersections[(x, y)] = TrafficLight(period=TRAFIL_LIGHTS_UPDATE_EACH)           
+                self.intersections[(x, y)] = TrafficLight(period=TRAFIL_LIGHTS_UPDATE_EACH)
 
         for a in self.intersections:
             for b in self.intersections:
@@ -69,9 +70,14 @@ class Environment(object):
 
     def create_agent(self, agent_class, *args, **kwargs):
         agent = agent_class(self, *args, **kwargs)
-#        self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
-        self.agent_states[agent] = {'location': (2, 2), 'heading': (0, 1)}
+        self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
+
         return agent
+
+    def get_agent_location(self, agent):
+        return self.agent_states[agent]['location']
+
+
 
     def set_primary_agent(self, agent, enforce_deadline=False):
         self.primary_agent = agent
@@ -111,7 +117,7 @@ class Environment(object):
             agent.reset(destination=(destination if agent is self.primary_agent else None))
 
     def step(self):
-        #print "Environment.step(): t = {}".format(self.t)  # [debug]
+        print "Environment.step(): t = {}".format(self.t)  # [debug]
 
         # Update traffic lights
         for intersection, traffic_light in self.intersections.iteritems():
@@ -127,6 +133,7 @@ class Environment(object):
                 self.done = True
                 print "Environment.reset(): Primary agent could not reach destination within deadline!"
             self.agent_states[self.primary_agent]['deadline'] -= 1
+        print ""
 
     def sense(self, agent):
         assert agent in self.agent_states, "Unknown agent!"
@@ -241,21 +248,11 @@ class Agent(object):
 
     def get_next_waypoint(self):
         return self.next_waypoint
-        
 
-class DummyAgent(Agent):
-    color_choices = ['blue', 'cyan', 'magenta', 'orange']
-
-    def __init__(self, env):
-        super(DummyAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
-        self.next_waypoint = random.choice(Environment.valid_actions[1:])
-        self.color = random.choice(self.color_choices)
-
-    def update(self, t):
-        inputs = self.env.sense(self)
-        #print inputs
-
+    #Function created to avoid code duplication - also called from Agent.py
+    def check_if_action_is_ok(self, inputs):
         action_okay = True
+
         if self.next_waypoint == 'right':
             if inputs['light'] == 'red' and inputs['left'] == 'forward':
                 action_okay = False
@@ -265,11 +262,93 @@ class DummyAgent(Agent):
         elif self.next_waypoint == 'left':
             if inputs['light'] == 'red' or (inputs['oncoming'] == 'forward' or inputs['oncoming'] == 'right'):
                 action_okay = False
+        return action_okay
 
+
+
+    #Function to get the Learning Agent's location
+    def get_my_location(self):
+        state = self.env.agent_states[self]
+        location = state['location']
+        heading = state['heading']
+        return location, heading
+        
+
+class DummyAgent(Agent):
+    color_choices = ['blue', 'cyan', 'magenta', 'orange']
+
+    def __init__(self, env):
+        super(DummyAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
+        self.next_waypoint = self.get_next_waypoint_given_location()# random.choice(Environment.valid_actions[1:])
+        self.color = random.choice(self.color_choices)
+
+    def update(self, t):
         action = None
+        inputs = self.env.sense(self)
+
+
+        action_okay = self.check_if_action_is_ok(inputs)
+
+
         if action_okay:
             action = self.next_waypoint
-            self.next_waypoint = random.choice(Environment.valid_actions[1:])
+        else:
+            loc, hed = self.get_my_location()
+            print 'Waiting at location:',loc, 'Heading:', hed, 'next_WP:', action
+
         reward = self.env.act(self, action)
+        if action_okay:
+            loc, hed = self.get_my_location() #This is the new location, after the agent moved
+            self.next_waypoint = self.get_next_waypoint_given_location(loc, hed)
+
+    #This function randomly selects the next action respecting the boundaries of the map
+    def get_next_waypoint_given_location(self,loc=None, hed=None):
+
+        topboundary = self.env.bounds[0]
+        leftboundary = self.env.bounds[1]
+
+        rightboundary = self.env.bounds[2]
+        bottonboundary = self.env.bounds[3]
+
+
+        print topboundary, leftboundary, rightboundary, bottonboundary
+        options = Environment.valid_actions[1:]
+        if loc !=None and hed != None:
+            if loc[0] == leftboundary: #1
+                if hed == (0, -1): #N
+                    options.remove('left')
+                elif hed == (-1, 0): #W
+                    options.remove('forward')
+                elif hed == (0,1): #S
+                    options.remove('right')
+            if loc[0] == rightboundary: #8
+                if hed == (0, -1): #N
+                    options.remove('right')
+                elif hed == (1,0): #E
+                    options.remove('forward')
+                elif hed == (0,1): #S
+                    options.remove('left')
+            if loc[1] == topboundary: #1
+                if hed == (0, -1): #N
+                    options.remove('forward')
+                elif hed == (1,0): #E
+                    options.remove('left')
+                elif hed == (-1,0): #S
+                    options.remove('right')
+            if loc[1] ==bottonboundary:#6
+                if hed == (0, 1): #S
+                    options.remove('forward')
+                elif hed == (1,0): #E
+                    options.remove('right')
+                elif hed == (-1,0): #W
+                    options.remove('left')
+
+        option = random.choice(options)
+        print options, option
+        return option
+
+
+
         #print "DummyAgent.update(): t = {}, inputs = {}, action = {}, reward = {}".format(t, inputs, action, reward)  # [debug]
         #print "DummyAgent.update(): next_waypoint = {}".format(self.next_waypoint)  # [debug]
+

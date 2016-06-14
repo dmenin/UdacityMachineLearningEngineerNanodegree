@@ -27,11 +27,16 @@ class TrafficLight(object):
             
 class Environment(object):
     """Environment within which all agents operate."""
-
-
     valid_actions = [None, 'forward', 'left', 'right']
     valid_inputs = {'light': TrafficLight.valid_states, 'oncoming': valid_actions, 'left': valid_actions, 'right': valid_actions}
     valid_headings = [(1, 0), (0, -1), (-1, 0), (0, 1)]  # ENWS
+
+    start_location = None
+    destination = None
+
+    def set_start_location_and_dest(self, start, dest):
+        self.start_location = start
+        self.destination = dest
 
     
     def __init__(self):
@@ -41,7 +46,7 @@ class Environment(object):
         self.status_text = ""
 
         # Road network
-        self.grid_size = (8, 6)  # (cols, rows)
+        self.grid_size = (8, 10)  # (cols, rows)
         self.bounds = (1, 1, self.grid_size[0], self.grid_size[1])
         self.block_size = 100
         self.intersections = OrderedDict()
@@ -59,7 +64,7 @@ class Environment(object):
                     self.roads.append((a, b))
 
         # Dummy agents
-        self.num_dummies = 2  # no. of dummy agents
+        self.num_dummies = 10  # no. of dummy agents
         for i in xrange(self.num_dummies):         
             a = self.create_agent(DummyAgent)
             a.setId(i+1)
@@ -71,13 +76,11 @@ class Environment(object):
     def create_agent(self, agent_class, *args, **kwargs):
         agent = agent_class(self, *args, **kwargs)
         self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
-
         return agent
+
 
     def get_agent_location(self, agent):
         return self.agent_states[agent]['location']
-
-
 
     def set_primary_agent(self, agent, enforce_deadline=False):
         self.primary_agent = agent
@@ -91,17 +94,21 @@ class Environment(object):
         for traffic_light in self.intersections.itervalues():
             traffic_light.reset()
 
-        # Pick a start and a destination
-        start = random.choice(self.intersections.keys())
-        destination = random.choice(self.intersections.keys())
-
-        # Ensure starting location and destination are not too close
-        while self.compute_dist(start, destination) < 4:
+        if self.start_location != None and self.destination != None:
+            start = self.start_location
+            destination = self.destination
+        else:
+            # Pick a start and a destination
             start = random.choice(self.intersections.keys())
             destination = random.choice(self.intersections.keys())
 
-        start = (1,1)
-        destination = (8,6)            
+            # Ensure starting location and destination are not too close
+            while self.compute_dist(start, destination) < 4:
+                start = random.choice(self.intersections.keys())
+                destination = random.choice(self.intersections.keys())
+
+
+
 
         start_heading = random.choice(self.valid_headings)
         deadline = self.compute_dist(start, destination) * 5

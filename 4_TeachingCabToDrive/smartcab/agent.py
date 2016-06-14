@@ -54,6 +54,8 @@ def run():
 
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
+    e.set_start_location_and_dest((1,1), (8,6))
+
     a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=False)  # set agent to track
 

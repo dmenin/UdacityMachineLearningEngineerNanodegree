@@ -59,10 +59,10 @@ class Environment(object):
                     self.roads.append((a, b))
 
         # Dummy agents
-        self.num_dummies = 1  # no. of dummy agents
+        self.num_dummies = 2  # no. of dummy agents
         for i in xrange(self.num_dummies):         
-            self.create_agent(DummyAgent)
-            #TypeError: 'DummyAgent' object is not callable
+            a = self.create_agent(DummyAgent)
+            a.setId(i+1)
 
         # Primary agent
         self.primary_agent = None  # to be set explicitly
@@ -276,11 +276,19 @@ class Agent(object):
 
 class DummyAgent(Agent):
     color_choices = ['blue', 'cyan', 'magenta', 'orange']
+    id = 0
+
+    def __str__(self):
+        return str(self.id)
+
+    def setId(self, _id):
+        self.id = _id
 
     def __init__(self, env):
         super(DummyAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
         self.next_waypoint = self.get_next_waypoint_given_location()# random.choice(Environment.valid_actions[1:])
         self.color = random.choice(self.color_choices)
+        print self.id
 
     def update(self, t):
         action = None
@@ -294,7 +302,7 @@ class DummyAgent(Agent):
             action = self.next_waypoint
         else:
             loc, hed = self.get_my_location()
-            print 'Waiting at location:',loc, 'Heading:', hed, 'next_WP:', action
+            print "Agent", self, 'Waiting at location:',loc, 'Heading:', hed, 'next_WP:', action
 
         reward = self.env.act(self, action)
         if action_okay:
@@ -310,8 +318,6 @@ class DummyAgent(Agent):
         rightboundary = self.env.bounds[2]
         bottonboundary = self.env.bounds[3]
 
-
-        print topboundary, leftboundary, rightboundary, bottonboundary
         options = Environment.valid_actions[1:]
         if loc !=None and hed != None:
             if loc[0] == leftboundary: #1
@@ -344,7 +350,6 @@ class DummyAgent(Agent):
                     options.remove('left')
 
         option = random.choice(options)
-        print options, option
         return option
 
 

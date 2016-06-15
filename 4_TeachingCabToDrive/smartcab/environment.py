@@ -46,7 +46,7 @@ class Environment(object):
         self.status_text = ""
 
         # Road network
-        self.grid_size = (8, 10)  # (cols, rows)
+        self.grid_size = (8, 6)  # (cols, rows)
         self.bounds = (1, 1, self.grid_size[0], self.grid_size[1])
         self.block_size = 100
         self.intersections = OrderedDict()
@@ -64,7 +64,7 @@ class Environment(object):
                     self.roads.append((a, b))
 
         # Dummy agents
-        self.num_dummies = 10  # no. of dummy agents
+        self.num_dummies = 0  # no. of dummy agents
         for i in xrange(self.num_dummies):         
             a = self.create_agent(DummyAgent)
             a.setId(i+1)
@@ -256,6 +256,13 @@ class Agent(object):
     def get_next_waypoint(self):
         return self.next_waypoint
 
+    #Function to get the Agent's location
+    def get_my_location(self):
+        state = self.env.agent_states[self]
+        location = state['location']
+        heading = state['heading']
+        return location, heading
+
     #Function created to avoid code duplication - also called from Agent.py
     def check_if_action_is_ok(self, inputs):
         action_okay = True
@@ -271,14 +278,51 @@ class Agent(object):
                 action_okay = False
         return action_okay
 
+    #This function randomly selects the next action respecting the boundaries of the map
+    def get_next_waypoint_given_location(self,loc=None, hed=None):
+        topboundary = self.env.bounds[0]
+        leftboundary = self.env.bounds[1]
+
+        rightboundary = self.env.bounds[2]
+        bottonboundary = self.env.bounds[3]
+
+        options = Environment.valid_actions[1:]
+        if loc !=None and hed != None:
+            #do not use elses due to the corners
+            if loc[0] == leftboundary: #1
+                if hed == (0, -1): #N
+                    options.remove('left')
+                elif hed == (-1, 0): #W
+                    options.remove('forward')
+                elif hed == (0,1): #S
+                    options.remove('right')
+            if loc[0] == rightboundary: #8
+                if hed == (0, -1): #N
+                    options.remove('right')
+                elif hed == (1,0): #E
+                    options.remove('forward')
+                elif hed == (0,1): #S
+                    options.remove('left')
+            if loc[1] == topboundary: #1
+                if hed == (0, -1): #N
+                    options.remove('forward')
+                elif hed == (1,0): #E
+                    options.remove('left')
+                elif hed == (-1,0): #S
+                    options.remove('right')
+            if loc[1] ==bottonboundary:#6
+                if hed == (0, 1): #S
+                    options.remove('forward')
+                elif hed == (1,0): #E
+                    options.remove('right')
+                elif hed == (-1,0): #W
+                    options.remove('left')
+
+        option = random.choice(options)
+        return option
 
 
-    #Function to get the Learning Agent's location
-    def get_my_location(self):
-        state = self.env.agent_states[self]
-        location = state['location']
-        heading = state['heading']
-        return location, heading
+
         
 
 class DummyAgent(Agent):
@@ -316,48 +360,7 @@ class DummyAgent(Agent):
             loc, hed = self.get_my_location() #This is the new location, after the agent moved
             self.next_waypoint = self.get_next_waypoint_given_location(loc, hed)
 
-    #This function randomly selects the next action respecting the boundaries of the map
-    def get_next_waypoint_given_location(self,loc=None, hed=None):
 
-        topboundary = self.env.bounds[0]
-        leftboundary = self.env.bounds[1]
-
-        rightboundary = self.env.bounds[2]
-        bottonboundary = self.env.bounds[3]
-
-        options = Environment.valid_actions[1:]
-        if loc !=None and hed != None:
-            if loc[0] == leftboundary: #1
-                if hed == (0, -1): #N
-                    options.remove('left')
-                elif hed == (-1, 0): #W
-                    options.remove('forward')
-                elif hed == (0,1): #S
-                    options.remove('right')
-            if loc[0] == rightboundary: #8
-                if hed == (0, -1): #N
-                    options.remove('right')
-                elif hed == (1,0): #E
-                    options.remove('forward')
-                elif hed == (0,1): #S
-                    options.remove('left')
-            if loc[1] == topboundary: #1
-                if hed == (0, -1): #N
-                    options.remove('forward')
-                elif hed == (1,0): #E
-                    options.remove('left')
-                elif hed == (-1,0): #S
-                    options.remove('right')
-            if loc[1] ==bottonboundary:#6
-                if hed == (0, 1): #S
-                    options.remove('forward')
-                elif hed == (1,0): #E
-                    options.remove('right')
-                elif hed == (-1,0): #W
-                    options.remove('left')
-
-        option = random.choice(options)
-        return option
 
 
 

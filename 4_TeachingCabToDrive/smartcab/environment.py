@@ -39,7 +39,8 @@ class Environment(object):
         self.destination = dest
 
     
-    def __init__(self):
+    def __init__(self, logfilepath=None):
+        self.logfilepath = logfilepath
         self.done = False
         self.t = 0
         self.agent_states = OrderedDict() # Stores the dummy agents
@@ -64,7 +65,7 @@ class Environment(object):
                     self.roads.append((a, b))
 
         # Dummy agents
-        self.num_dummies = 0  # no. of dummy agents
+        self.num_dummies = 5  # no. of dummy agents
         for i in xrange(self.num_dummies):         
             a = self.create_agent(DummyAgent)
             a.setId(i+1)
@@ -139,6 +140,10 @@ class Environment(object):
             if self.enforce_deadline and self.agent_states[self.primary_agent]['deadline'] <= 0:
                 self.done = True
                 print "Environment.reset(): Primary agent could not reach destination within deadline!"
+                self.logEndMessage("Primary agent could not reach destination within deadline!\n")
+
+
+
             self.agent_states[self.primary_agent]['deadline'] -= 1
         print ""
 
@@ -179,6 +184,12 @@ class Environment(object):
     def get_deadline(self, agent):
         return self.agent_states[agent]['deadline'] if agent is self.primary_agent else None
 
+    def logEndMessage(self, message):
+        print "filepath:", self.logfilepath
+        with open(self.logfilepath, 'a') as file:
+            file.write(message)
+
+
     def act(self, agent, action):
         assert agent in self.agent_states, "Unknown agent!"
         assert action in self.valid_actions, "Invalid action!"
@@ -203,7 +214,13 @@ class Environment(object):
             else:
                 move_okay = False
         elif action == 'right':
+#            if light == 'green' or sense['left'] != 'straight':
+#                heading = (-heading[1], heading[0])
+#            else:
+#                move_okay = False
+            #https://discussions.udacity.com/t/are-the-zipped-files-an-old-version-of-the-project/173557
             heading = (-heading[1], heading[0])
+
 
         if action is not None:
             if move_okay:
@@ -223,7 +240,9 @@ class Environment(object):
                 if state['deadline'] >= 0:
                     reward += 10  # bonus
                 self.done = True
-                print "Environment.act(): Primary agent has reached destination!"  # [debug]
+                print "Environment.act(): Primary agent has reached destination!\n"
+                self.logEndMessage("Primary agent has reached destination!\n")
+
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 
@@ -321,10 +340,6 @@ class Agent(object):
         option = random.choice(options)
         return option
 
-
-
-        
-
 class DummyAgent(Agent):
     color_choices = ['blue', 'cyan', 'magenta', 'orange']
     id = 0
@@ -353,7 +368,7 @@ class DummyAgent(Agent):
             action = self.next_waypoint
         else:
             loc, hed = self.get_my_location()
-            print "Agent", self, 'Waiting at location:',loc, 'Heading:', hed, 'next_WP:', action
+            #print "Agent", self, 'Waiting at location:',loc, 'Heading:', hed, 'next_WP:', action
 
         reward = self.env.act(self, action)
         if action_okay:

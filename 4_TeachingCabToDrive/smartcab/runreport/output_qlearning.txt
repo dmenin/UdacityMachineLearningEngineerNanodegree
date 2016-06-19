@@ -71,3 +71,50 @@ Primary agent could not reach destination within deadline!
 
 *** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
 ************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+Primary agent has reached destination!
+Primary agent has reached destination!
+Primary agent has reached destination!
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+Primary agent could not reach destination within deadline!
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+Primary agent has reached destination!
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+Primary agent has reached destination!
+Primary agent could not reach destination within deadline!
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+
+*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+************************************************
+Primary agent could not reach destination within deadline!

@@ -258,6 +258,7 @@ class Agent(object):
     """Base class for all agents."""
 
     def __init__(self, env):
+        print "Agent __init__"
         self.env = env
         self.state = None
         self.next_waypoint = None

@@ -3,9 +3,12 @@ import random
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
+import pandas as pd
+from tabulate import tabulate
 
 script_dir = os.path.dirname(__file__)
-path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
+path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
+#path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
 
 
 class QTable(object):
@@ -19,8 +22,15 @@ class QTable(object):
     def set(self, state, action, q):
         key = (state, action)
         self.Q[key] = q
+    
+    def prettyPrint(self):
+        df = pd.DataFrame(columns=['state','action','reward'])
+        for k, v in self.Q.items():
+            df.loc[len(df)] = [k[0],k[1],v]
+        print 'QTable:'
+        print tabulate(df, list(df.columns), tablefmt="grid")
 
-    def printQTable(self):
+    def simplePrint(self):
         for k, v in self.Q.items():
             print k, v
 
@@ -35,6 +45,17 @@ class QLearn(Agent):
     #   http://mnemstudio.org/path-finding-q-learning-tutorial.htm
     #   The Gamma parameter has a range of 0 to 1 (0 <= Gamma > 1).  If Gamma is closer to zero, the agent will tend to consider only immediate rewards.
     #   If Gamma is closer to one, the agent will consider future rewards with greater weight, willing to delay the reward.
+
+    def __init__(self, pRandomMove=.1, learning_rate =.5, gamma=.5):
+        self.QTable = QTable()       # Q(s, a)
+        self.pRandomMove = pRandomMove
+        self.learning_rate = learning_rate
+        self.gamma = gamma      # memory / discount factor of max Q(s',a')
+
+        self.possible_actions = Environment.valid_actions
+        with open(path, 'a') as file:
+            file.write("\n*** parameters: pRandomMove: {}, Learning Rate: {}, gamma: {}\n".format(self.pRandomMove, self.learning_rate, self.gamma))
+            file.write("************************************************\n")
 
 
 class LearningAgent(Agent):
@@ -84,7 +105,7 @@ def run():
 
     # Now simulate it
     sim = Simulator(e, update_delay=1)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=10)  # press Esc or close pygame window to quit
+    sim.run(n_trials=1)  # press Esc or close pygame window to quit
 
 
 if __name__ == '__main__':

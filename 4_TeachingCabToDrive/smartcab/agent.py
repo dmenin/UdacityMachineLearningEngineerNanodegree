@@ -17,7 +17,8 @@ class QTable(object):
 
     def get(self, state, action):
         key = (state, action)
-        return self.Q.get(key, None)
+        #default returns 0 - prevents actions with negative rewards from being chosen when there is an action with 0 reward
+        return self.Q.get(key, 0)
 
     def set(self, state, action, q):
         key = (state, action)

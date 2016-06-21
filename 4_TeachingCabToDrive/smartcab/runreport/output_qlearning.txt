@@ -25,3 +25,10 @@ Primary agent has reached destination!
 Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.4
 -------------------------------------------------------
 Primary agent could not reach destination within deadline!
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.4
+-------------------------------------------------------
+Primary agent could not reach destination within deadline!
+Primary agent could not reach destination within deadline!
+Primary agent could not reach destination within deadline!
+Primary agent has reached destination!

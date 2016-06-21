@@ -72,13 +72,11 @@ class QLearn(Agent):
             max_reward = max(pr)
 
             #Gets the ID correspondent to the max reward
-            #if there are ties or all the rewards are None, gets a random value.
-            #Question: if all the rewards are None or negative, currently it gets the highest negative value.
-            #          Should it return None?
+            #if there are ties or all the rewards are None, gets a random value among those
             action_idx = random.choice([i for i in range(len(self.possible_actions)) if pr[i] == max_reward])
             action = self.possible_actions[action_idx]
             print 'Ations Rewards(N,F,L,R):', pr
-            print 'Index Chosen:' , action_idx
+            print 'Index Chosen:', action_idx
 
         return action
 

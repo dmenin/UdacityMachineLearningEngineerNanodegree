@@ -179,11 +179,9 @@ class Environment(object):
     def get_deadline(self, agent):
         return self.agent_states[agent]['deadline'] if agent is self.primary_agent else None
 
-    def logEndMessage(self, message):
-        with open(self.logfilepath, 'a') as file:
-            file.write(message)
-
-
+    #Updated ACT method according to:
+    #https://discussions.udacity.com/t/are-the-zipped-files-an-old-version-of-the-project/173557 AND
+    #https://discussions.udacity.com/t/possible-error-in-the-smartcab-turning-logic/174144
     def act(self, agent, action):
         assert agent in self.agent_states, "Unknown agent!"
         assert action in self.valid_actions, "Invalid action!"
@@ -192,7 +190,7 @@ class Environment(object):
         location = state['location']
         heading = state['heading']
         light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
-
+        sense = self.sense(agent)
 
         # Move agent if within bounds and obeys traffic rules
         reward = 0  # reward/penalty
@@ -201,44 +199,48 @@ class Environment(object):
             if light != 'green':
                 move_okay = False
         elif action == 'left':
-            if light == 'green':
+            if light == 'green' and (sense['oncoming'] == None or sense['oncoming'] == 'left'):
                 heading = (heading[1], -heading[0])
             else:
                 move_okay = False
         elif action == 'right':
-#            if light == 'green' or sense['left'] != 'straight':
-#                heading = (-heading[1], heading[0])
-#            else:
-#                move_okay = False
-            #https://discussions.udacity.com/t/are-the-zipped-files-an-old-version-of-the-project/173557
-            heading = (-heading[1], heading[0])
+            if light == 'green' or (sense['oncoming'] != 'left' and sense['left'] != 'straight'):
+                heading = (-heading[1], heading[0])
+            else:
+                move_okay = False
 
-
-        if action is not None:
-            if move_okay:
+        if move_okay:
+            # Valid move (could be null)
+            if action is not None:
+                # Valid non-null move
                 location = ((location[0] + heading[0] - self.bounds[0]) % (self.bounds[2] - self.bounds[0] + 1) + self.bounds[0],
                             (location[1] + heading[1] - self.bounds[1]) % (self.bounds[3] - self.bounds[1] + 1) + self.bounds[1])  # wrap-around
                 #if self.bounds[0] <= location[0] <= self.bounds[2] and self.bounds[1] <= location[1] <= self.bounds[3]:  # bounded
                 state['location'] = location
                 state['heading'] = heading
-                reward = 2 if action == agent.get_next_waypoint() else 0.5
+                reward = 2.0 if action == agent.get_next_waypoint() else -0.5  # valid, but is it correct? (as per waypoint)
             else:
-                reward = -1
+                # Valid null move
+                reward = 0.0
         else:
-            reward = 1
+            # Invalid move
+            reward = -1.0
 
         if agent is self.primary_agent:
             if state['location'] == state['destination']:
                 if state['deadline'] >= 0:
                     reward += 10  # bonus
                 self.done = True
-                print "Environment.act(): Primary agent has reached destination!\n"
+                print "Environment.act(): Primary agent has reached destination!"  # [debug]
                 self.logEndMessage("Primary agent has reached destination!\n")
-
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 
         return reward
+
+    def logEndMessage(self, message):
+        with open(self.logfilepath, 'a') as file:
+            file.write(message)
 
     def compute_dist(self, a, b):
         """L1 distance between two points."""
@@ -250,7 +252,6 @@ class Agent(object):
     """Base class for all agents."""
 
     def __init__(self, env):
-        print "Agent __init__"
         self.env = env
         self.state = None
         self.next_waypoint = None
@@ -342,12 +343,13 @@ class DummyAgent(Agent):
 
     def setId(self, _id):
         self.id = _id
+        print 'Initializing Dummy Agent number:', self.id
 
     def __init__(self, env):
         super(DummyAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
         self.next_waypoint = self.get_next_waypoint_given_location()# random.choice(Environment.valid_actions[1:])
         self.color = random.choice(self.color_choices)
-        print self.id
+
 
     def update(self, t):
         action = None
@@ -375,3 +377,59 @@ class DummyAgent(Agent):
         #print "DummyAgent.update(): t = {}, inputs = {}, action = {}, reward = {}".format(t, inputs, action, reward)  # [debug]
         #print "DummyAgent.update(): next_waypoint = {}".format(self.next_waypoint)  # [debug]
 
+
+
+
+'''
+#DEPRECATED ACT METHOD:
+    def act(self, agent, action):
+        assert agent in self.agent_states, "Unknown agent!"
+        assert action in self.valid_actions, "Invalid action!"
+
+        state = self.agent_states[agent]
+        location = state['location']
+        heading = state['heading']
+        light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
+
+
+        # Move agent if within bounds and obeys traffic rules
+        reward = 0  # reward/penalty
+        move_okay = True
+        if action == 'forward':
+            if light != 'green':
+                move_okay = False
+        elif action == 'left':
+            if light == 'green':
+                heading = (heading[1], -heading[0])
+            else:
+                move_okay = False
+        elif action == 'right':
+            heading = (-heading[1], heading[0])
+
+
+        if action is not None:
+            if move_okay:
+                location = ((location[0] + heading[0] - self.bounds[0]) % (self.bounds[2] - self.bounds[0] + 1) + self.bounds[0],
+                            (location[1] + heading[1] - self.bounds[1]) % (self.bounds[3] - self.bounds[1] + 1) + self.bounds[1])  # wrap-around
+                #if self.bounds[0] <= location[0] <= self.bounds[2] and self.bounds[1] <= location[1] <= self.bounds[3]:  # bounded
+                state['location'] = location
+                state['heading'] = heading
+                reward = 2 if action == agent.get_next_waypoint() else 0.5
+            else:
+                reward = -1
+        else:
+            reward = 1
+
+        if agent is self.primary_agent:
+            if state['location'] == state['destination']:
+                if state['deadline'] >= 0:
+                    reward += 10  # bonus
+                self.done = True
+                print "Environment.act(): Primary agent has reached destination!\n"
+                self.logEndMessage("Primary agent has reached destination!\n")
+
+            self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
+            #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
+
+        return reward
+'''

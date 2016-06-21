@@ -153,13 +153,8 @@ class Environment(object):
         state = self.agent_states[agent]    
         location = state['location']
         heading = state['heading']
+        light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
 
-        
-        #AQUIII
-        try:
-            light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
-        except:
-            light = 'green'
 
         # Populate oncoming, left, right
         oncoming = None
@@ -185,7 +180,6 @@ class Environment(object):
         return self.agent_states[agent]['deadline'] if agent is self.primary_agent else None
 
     def logEndMessage(self, message):
-        print "filepath:", self.logfilepath
         with open(self.logfilepath, 'a') as file:
             file.write(message)
 
@@ -197,10 +191,8 @@ class Environment(object):
         state = self.agent_states[agent]
         location = state['location']
         heading = state['heading']
-        try:
-            light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
-        except:
-            light = 'green'       
+        light = 'green' if (self.intersections[location].state and heading[1] != 0) or ((not self.intersections[location].state) and heading[0] != 0) else 'red'
+
 
         # Move agent if within bounds and obeys traffic rules
         reward = 0  # reward/penalty

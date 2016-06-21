@@ -7,8 +7,8 @@ import pandas as pd
 from tabulate import tabulate
 
 script_dir = os.path.dirname(__file__)
-path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
-#path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
+#path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
+path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
 
 
 class QTable(object):
@@ -24,7 +24,7 @@ class QTable(object):
         self.Q[key] = q
     
     def prettyPrint(self):
-        df = pd.DataFrame(columns=['state','action','reward'])
+        df = pd.DataFrame(columns=['State (light / oncoming / right / left)','action','reward'])
         for k, v in self.Q.items():
             df.loc[len(df)] = [k[0],k[1],v]
         print 'QTable:'
@@ -33,6 +33,7 @@ class QTable(object):
     def simplePrint(self):
         for k, v in self.Q.items():
             print k, v
+
 
 
 class QLearn(Agent):
@@ -45,17 +46,111 @@ class QLearn(Agent):
     #   http://mnemstudio.org/path-finding-q-learning-tutorial.htm
     #   The Gamma parameter has a range of 0 to 1 (0 <= Gamma > 1).  If Gamma is closer to zero, the agent will tend to consider only immediate rewards.
     #   If Gamma is closer to one, the agent will consider future rewards with greater weight, willing to delay the reward.
-
     def __init__(self, pRandomMove=.1, learning_rate =.5, gamma=.5):
-        self.QTable = QTable()       # Q(s, a)
+        self.QTable = QTable()
         self.pRandomMove = pRandomMove
         self.learning_rate = learning_rate
         self.gamma = gamma      # memory / discount factor of max Q(s',a')
 
         self.possible_actions = Environment.valid_actions
         with open(path, 'a') as file:
-            file.write("\n*** parameters: pRandomMove: {}, Learning Rate: {}, gamma: {}\n".format(self.pRandomMove, self.learning_rate, self.gamma))
-            file.write("************************************************\n")
+            file.write("\nParameters: pRandomMove: {}, Learning Rate: {}, gamma: {}\n".format(self.pRandomMove, self.learning_rate, self.gamma))
+            file.write("-------------------------------------------------------\n")
+
+    def GetNextPossibleBestAction(self, state):
+        if random.random() < self.pRandomMove:
+            print "RANDOM MOVE"
+            action = random.choice(self.possible_actions)
+        else:
+            pr = []
+            for pa in self.possible_actions: #for each possible action
+                pr.append(self.QTable.get(state, pa)) #get the possible reward from the QTable
+
+
+            #Get The Max Reward
+            max_reward = max(pr)
+
+            #Gets the ID correspondent to the max reward
+            #if there are ties or all the rewards are None, gets a random value.
+            #Question: if all the rewards are None or negative, currently it gets the highest negative value.
+            #          Should it return None?
+            action_idx = random.choice([i for i in range(len(self.possible_actions)) if pr[i] == max_reward])
+            action = self.possible_actions[action_idx]
+            print 'Ations Rewards(N,F,L,R):', pr
+            print 'Index Chosen:' , action_idx
+
+        return action
+
+    # Qval(State,action) = currentQval(State,action) - alpha*(newQval - currenQval(State,action))
+
+    #Even though the agent just moved, This is from its perspective BEFORE the move, so:
+    #   State, Action: What the agent just did (where it was and what it considered the best action
+    #   Next State: Where it is
+    #   Reward: it got for the move
+    def Learn(self, state, action, next_state, reward):
+        pr = []
+        for pa in self.possible_actions: #for each possible action
+            pr.append(self.QTable.get(next_state, pa))
+
+        future_rewards = max(pr)
+        if future_rewards is None:
+            future_rewards = 0.0
+
+
+        newQ = reward - self.gamma * future_rewards
+        self.UpdateQTable(state, action, reward, newQ)
+
+    def UpdateQTable(self, state, action, reward, new_q):
+        q = self.QTable.get(state, action)
+        if q is None:
+            q = reward
+        else:
+            q += self.learning_rate * new_q
+
+        self.QTable.set(state, action, q)
+
+
+
+class QLearningAgent(Agent):
+
+     def __init__(self, env, pRandomMove, learning_rate, gamma):
+        super(QLearningAgent, self).__init__(env)
+        self.color = 'red'  # override color
+        self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
+        self.possible_actions= Environment.valid_actions
+        #self.QLearning = QLearn(pRandomMove=.05, learning_rate =0.1, gamma=0.5)
+        self.QLearning = QLearn(pRandomMove, learning_rate, gamma)
+
+     def reset(self, destination=None):
+        self.planner.route_to(destination)
+
+    #Implements "Method 1" as described here: https://discussions.udacity.com/t/please-someone-clear-up-a-couple-of-points-to-me/45365
+    #1) Sense the environment (see what changes naturally occur in the environment)
+    #2) Take an action - get a reward
+    # 3) Sense the environment (see what changes the action has on the environment)
+    # 4) Update the Q-table
+    # 5) Repeat
+     def update(self, t):
+        self.QLearning.QTable.prettyPrint()
+        self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
+
+        loc = self.env.sense(self).items()
+        self.state = (loc[0][1],loc[1][1],loc[2][1],loc[3][1],self.next_waypoint)
+
+        action = self.QLearning.GetNextPossibleBestAction(self.state)
+        reward = self.env.act(self, action)# Execute action and get reward (-1, 0.5,1 or 2)
+        print 'Action Chosen:' , action, 'reward: ', reward
+
+
+        #Sense the New location
+        newloc = self.env.sense(self).items()
+        next_state = (newloc[0][1],newloc[1][1],newloc[2][1],newloc[3][1], self.next_waypoint)
+
+        self.QLearning.Learn(self.state, action, next_state, reward)
+
+        deadline = self.env.get_deadline(self)
+        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, loc, action, reward)  # [debug]
+
 
 
 class LearningAgent(Agent):
@@ -100,12 +195,12 @@ def run():
     #a = e.create_agent(LearningAgent)  # create agent
 
     e = Environment(logfilepath=path)  # create environment (also adds some dummy traffic)
-    a = e.create_agent(QLearningAgent)
+    a = e.create_agent(QLearningAgent, pRandomMove=.05, learning_rate =0.1, gamma=0.4)
     e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
     # Now simulate it
     sim = Simulator(e, update_delay=1)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=1)  # press Esc or close pygame window to quit
+    sim.run(n_trials=10)  # press Esc or close pygame window to quit
 
 
 if __name__ == '__main__':

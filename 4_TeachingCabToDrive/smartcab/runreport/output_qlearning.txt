@@ -1,120 +1,27 @@
 
-*** parameters: epsilon: 0.05, alpha 0.1, gamma: 0.9
-************************************************
-Primary agent could not reach destination within deadline!
-Primary agent has reached destination!
-Primary agent has reached destination!
-Primary agent has reached destination!
-Primary agent has reached destination!
-Primary agent could not reach destination within deadline!
-Primary agent has reached destination!
-Primary agent could not reach destination within deadline!
-Primary agent has reached destination!
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
+-------------------------------------------------------
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
 Primary agent could not reach destination within deadline!
 
-*** parameters: epsilon: 0.05, alpha 0.1, gamma: 0.9
-************************************************
-Primary agent has reached destination!
-Primary agent could not reach destination within deadline!
-Primary agent could not reach destination within deadline!
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.4
+-------------------------------------------------------
 Primary agent could not reach destination within deadline!
 Primary agent has reached destination!
 Primary agent has reached destination!
 Primary agent has reached destination!
 Primary agent has reached destination!
 Primary agent has reached destination!
-Primary agent could not reach destination within deadline!
-
-*** parameters: epsilon: 0.05, alpha 0.1, gamma: 0.9
-************************************************
-Primary agent could not reach destination within deadline!
-Primary agent could not reach destination within deadline!
-Primary agent could not reach destination within deadline!
-Primary agent could not reach destination within deadline!
-Primary agent could not reach destination within deadline!
 Primary agent has reached destination!
-Primary agent could not reach destination within deadline!
 Primary agent has reached destination!
 Primary agent could not reach destination within deadline!
 Primary agent has reached destination!
 
-*** parameters: epsilon: 0.05, alpha 0.1, gamma: 0.9
-************************************************
-
-*** parameters: epsilon: 0.05, alpha 0.1, gamma: 0.9
-************************************************
-
-*** parameters: epsilon: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: epsilon: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-Primary agent could not reach destination within deadline!
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-Primary agent has reached destination!
-Primary agent has reached destination!
-Primary agent has reached destination!
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-Primary agent could not reach destination within deadline!
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-Primary agent has reached destination!
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-Primary agent has reached destination!
-Primary agent could not reach destination within deadline!
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
-
-*** parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.9
-************************************************
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.4
+-------------------------------------------------------
 Primary agent could not reach destination within deadline!

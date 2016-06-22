@@ -5,10 +5,13 @@ from planner import RoutePlanner
 from simulator import Simulator
 import pandas as pd
 from tabulate import tabulate
+import numpy as np
 
 script_dir = os.path.dirname(__file__)
 #path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
 path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
+
+DEBUG = False
 
 
 class QTable(object):
@@ -49,9 +52,10 @@ class QLearn(Agent):
     #   If Gamma is closer to one, the agent will consider future rewards with greater weight, willing to delay the reward.
     def __init__(self, pRandomMove=.1, learning_rate =.5, gamma=.5):
         self.QTable = QTable()
-        self.pRandomMove = pRandomMove
-        self.learning_rate = learning_rate
-        self.gamma = gamma      # memory / discount factor of max Q(s',a')
+
+        self.pRandomMove = pRandomMove      #Epsilon
+        self.learning_rate = learning_rate  #Alpha
+        self.gamma = gamma         # memory / discount factor of max Q(s',a')
 
         self.possible_actions = Environment.valid_actions
         with open(path, 'a') as file:
@@ -60,7 +64,8 @@ class QLearn(Agent):
 
     def GetNextPossibleBestAction(self, state):
         if random.random() < self.pRandomMove:
-            print "RANDOM MOVE"
+            if DEBUG:
+                print "RANDOM MOVE"
             action = random.choice(self.possible_actions)
         else:
             pr = []
@@ -75,8 +80,9 @@ class QLearn(Agent):
             #if there are ties or all the rewards are None, gets a random value among those
             action_idx = random.choice([i for i in range(len(self.possible_actions)) if pr[i] == max_reward])
             action = self.possible_actions[action_idx]
-            print 'Ations Rewards(N,F,L,R):', pr
-            print 'Index Chosen:', action_idx
+            if DEBUG:
+                print 'Ations Rewards(N,F,L,R):', pr
+                print 'Index Chosen:', action_idx
 
         return action
 
@@ -118,7 +124,9 @@ class QLearningAgent(Agent):
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         self.possible_actions= Environment.valid_actions
         #self.QLearning = QLearn(pRandomMove=.05, learning_rate =0.1, gamma=0.5)
+
         self.QLearning = QLearn(pRandomMove, learning_rate, gamma)
+
 
      def reset(self, destination=None):
         self.planner.route_to(destination)
@@ -130,7 +138,8 @@ class QLearningAgent(Agent):
     # 4) Update the Q-table
     # 5) Repeat
      def update(self, t):
-        self.QLearning.QTable.prettyPrint()
+        if DEBUG:
+            self.QLearning.QTable.prettyPrint()
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
 
         loc = self.env.sense(self).items()
@@ -138,7 +147,8 @@ class QLearningAgent(Agent):
 
         action = self.QLearning.GetNextPossibleBestAction(self.state)
         reward = self.env.act(self, action)# Execute action and get reward (-1, 0.5,1 or 2)
-        print 'Action Chosen:' , action, 'reward: ', reward
+        if DEBUG:
+            print 'Action Chosen:' , action, 'reward: ', reward
 
 
         #Sense the New location
@@ -148,7 +158,8 @@ class QLearningAgent(Agent):
         self.QLearning.Learn(self.state, action, next_state, reward)
 
         deadline = self.env.get_deadline(self)
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, loc, action, reward)  # [debug]
+        if DEBUG:
+            print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, loc, action, reward)  # [debug]
 
 
 
@@ -193,13 +204,22 @@ def run():
     #e.set_start_location_and_dest((1,1), (8,6)) set the Start Location
     #a = e.create_agent(LearningAgent)  # create agent
 
-    e = Environment(logfilepath=path)  # create environment (also adds some dummy traffic)
-    a = e.create_agent(QLearningAgent, pRandomMove=.05, learning_rate =0.1, gamma=0.4)
-    e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
-    # Now simulate it
-    sim = Simulator(e, update_delay=1)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=10)  # press Esc or close pygame window to quit
+    #pRandomMove\learning_rate\gamma
+    for e in np.arange(0, 0.55, 0.05):
+        for a in np.arange(0, 1.1, 0.1):
+            for g in np.arange(0, 1.1, 0.1):
+                e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
+                e.DEBUG = DEBUG
+                a = e.create_agent(QLearningAgent, pRandomMove=p, learning_rate =a, gamma=g)
+                e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+
+                sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
+                sim.run(n_trials=20)  # press Esc or close pygame window to quit
+
+
+    print tabulate(e.dfLog, list(e.dfLog.columns), tablefmt="grid")
+    e.dfLog.to_csv("dfLog-20-trials.csv")
 
 
 if __name__ == '__main__':

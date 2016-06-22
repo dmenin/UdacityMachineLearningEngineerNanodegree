@@ -2,9 +2,11 @@ import time
 import random
 from collections import OrderedDict
 from simulator import Simulator
+import pandas as pd
 
 
-TRAFIL_LIGHTS_UPDATE_EACH = 5 #periods
+TRAFIL_LIGHTS_UPDATE_EACH = 3 #periods
+DEBUG = False
 
 class TrafficLight(object):
     """A traffic light that switches periodically."""
@@ -34,13 +36,24 @@ class Environment(object):
     start_location = None
     destination = None
 
+    dfLog = pd.DataFrame(columns=['Trial','Distance', 'DeadLine','Sucess', 'Steps', 'Epsilon', 'Alpha', 'Gamma','QTableSize'])
+
+    successes = 0
+    failures = 0
+
     def set_start_location_and_dest(self, start, dest):
         self.start_location = start
         self.destination = dest
 
     
     def __init__(self, logfilepath=None):
+        #Variables used for logging only:
+        self.runningTrial = -1 #Set by the Simulation class.
+        self.aplha = -1
+        self.aplha = -1
         self.logfilepath = logfilepath
+
+
         self.done = False
         self.t = 0
         self.agent_states = OrderedDict() # Stores the dummy agents
@@ -79,7 +92,6 @@ class Environment(object):
         self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
         return agent
 
-
     def get_agent_location(self, agent):
         return self.agent_states[agent]['location']
 
@@ -108,11 +120,9 @@ class Environment(object):
                 start = random.choice(self.intersections.keys())
                 destination = random.choice(self.intersections.keys())
 
-
-
-
         start_heading = random.choice(self.valid_headings)
-        deadline = self.compute_dist(start, destination) * 5
+        self.total_distance = self.compute_dist(start, destination)
+        deadline = self.total_distance * 5
         print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
 
         # Initialize agent(s)
@@ -125,7 +135,8 @@ class Environment(object):
             agent.reset(destination=(destination if agent is self.primary_agent else None))
 
     def step(self):
-        print "Environment.step(): t = {}".format(self.t)  # [debug]
+        if DEBUG:
+            print "Environment.step(): t = {}".format(self.t)  # [debug]
 
         # Update traffic lights
         for intersection, traffic_light in self.intersections.iteritems():
@@ -139,13 +150,9 @@ class Environment(object):
         if self.primary_agent is not None:
             if self.enforce_deadline and self.agent_states[self.primary_agent]['deadline'] <= 0:
                 self.done = True
-                print "Environment.reset(): Primary agent could not reach destination within deadline!"
-                self.logEndMessage("Primary agent could not reach destination within deadline!\n")
-
-
+                self.logStatus("N")
 
             self.agent_states[self.primary_agent]['deadline'] -= 1
-        print ""
 
     def sense(self, agent):
         assert agent in self.agent_states, "Unknown agent!"
@@ -231,16 +238,35 @@ class Environment(object):
                 if state['deadline'] >= 0:
                     reward += 10  # bonus
                 self.done = True
-                print "Environment.act(): Primary agent has reached destination!"  # [debug]
-                self.logEndMessage("Primary agent has reached destination!\n")
+                self.logStatus('Y')
+
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
-            #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 
         return reward
 
-    def logEndMessage(self, message):
+    def logStatus(self, status):
+        if status =='Y':
+            self.successes +=1
+            message = "Primary agent has reached destination in {} steps!\n".format(self.t)
+        else:
+            self.failures +=1
+            message = "Primary agent could not reach destination within deadline!\n"
+
+        self.dfLog.loc[len(self.dfLog)] = [self.runningTrial,
+                                           self.total_distance,
+                                           self.total_distance*5,
+                                           status,
+                                           self.t,
+                                           self.primary_agent.QLearning.pRandomMove,
+                                           self.primary_agent.QLearning.learning_rate,
+                                           self.primary_agent.QLearning.gamma,
+                                           len(self.primary_agent.QLearning.QTable.Q)]
+
+
+
         with open(self.logfilepath, 'a') as file:
             file.write(message)
+
 
     def compute_dist(self, a, b):
         """L1 distance between two points."""
@@ -343,7 +369,8 @@ class DummyAgent(Agent):
 
     def setId(self, _id):
         self.id = _id
-        print 'Initializing Dummy Agent number:', self.id
+        if DEBUG:
+            print 'Initializing Dummy Agent number:', self.id
 
     def __init__(self, env):
         super(DummyAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color

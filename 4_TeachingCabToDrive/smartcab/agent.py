@@ -206,12 +206,12 @@ def run():
 
 
     #pRandomMove\learning_rate\gamma
-    for e in np.arange(0, 0.55, 0.05):
-        for a in np.arange(0, 1.1, 0.1):
-            for g in np.arange(0, 1.1, 0.1):
+    for ep in np.arange(0, 0.55, 0.05):
+        for al in np.arange(0, 1.1, 0.1):
+            for ga in np.arange(0, 1.1, 0.1):
                 e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
                 e.DEBUG = DEBUG
-                a = e.create_agent(QLearningAgent, pRandomMove=p, learning_rate =a, gamma=g)
+                a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate =al, gamma=ga)
                 e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
                 sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation

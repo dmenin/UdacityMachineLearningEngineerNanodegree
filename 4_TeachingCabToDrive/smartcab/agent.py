@@ -8,10 +8,10 @@ from tabulate import tabulate
 import numpy as np
 
 script_dir = os.path.dirname(__file__)
-#path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
-path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
+path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
+#path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
 
-DEBUG = False
+DEBUG = True
 
 
 class QTable(object):
@@ -86,35 +86,31 @@ class QLearn(Agent):
 
         return action
 
-    # Qval(State,action) = currentQval(State,action) - alpha*(newQval - currenQval(State,action))
-
     #Even though the agent just moved, This is from its perspective BEFORE the move, so:
     #   State, Action: What the agent just did (where it was and what it considered the best action
     #   Next State: Where it is
     #   Reward: it got for the move
+    #Implement:
+    #Q(s,a) = Q(s,a) + alpha * [R(s,a) + gamma * argmax(R(s', a')) - Q(s, a)]        
     def Learn(self, state, action, next_state, reward):
+        currentQValue = self.QTable.get(state, action)
+        alpha = self.learning_rate # for simplicity of the formula only
+        #Get the Possible Future Rewards From The Current State 
         pr = []
         for pa in self.possible_actions: #for each possible action
             pr.append(self.QTable.get(next_state, pa))
 
-        future_rewards = max(pr)
-        if future_rewards is None:
-            future_rewards = 0.0
-
-
-        newQ = reward - self.gamma * future_rewards
-        self.UpdateQTable(state, action, reward, newQ)
-
-    def UpdateQTable(self, state, action, reward, new_q):
-        q = self.QTable.get(state, action)
-        if q is None:
-            q = reward
-        else:
-            q += self.learning_rate * new_q
-
-        self.QTable.set(state, action, q)
-
-
+        FutureReward = max(pr) 
+        if FutureReward is None:
+            FutureReward = 0.0
+        
+        
+        #      alpha * [R(s,a) +    gamma   * argmax(R(s', a')) - Q(s, a)]
+        newQ = alpha * (reward + self.gamma *   FutureReward    - currentQValue)
+        newQ =  currentQValue + newQ
+                
+        self.QTable.set(state, action, newQ)
+        
 
 class QLearningAgent(Agent):
 
@@ -206,16 +202,16 @@ def run():
 
 
     #pRandomMove\learning_rate\gamma
-    for ep in np.arange(0, 0.55, 0.05):
-        for al in np.arange(0, 1.1, 0.1):
-            for ga in np.arange(0, 1.1, 0.1):
-                e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
-                e.DEBUG = DEBUG
-                a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate =al, gamma=ga)
-                e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+    #for ep in np.arange(0, 0.55, 0.05):
+    #    for al in np.arange(0, 1.1, 0.1):
+    #        for ga in np.arange(0, 1.1, 0.1):
+    e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
+    e.DEBUG = DEBUG
+    a = e.create_agent(QLearningAgent, pRandomMove=0.05, learning_rate =0.1, gamma=0.5)
+    e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
-                sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
-                sim.run(n_trials=20)  # press Esc or close pygame window to quit
+    sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
+    sim.run(n_trials=1)  # press Esc or close pygame window to quit
 
 
     print tabulate(e.dfLog, list(e.dfLog.columns), tablefmt="grid")

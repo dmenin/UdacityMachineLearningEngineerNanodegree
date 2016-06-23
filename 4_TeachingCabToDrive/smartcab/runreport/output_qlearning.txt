@@ -1,0 +1,28 @@
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
+Primary agent has reached destination in 22 steps!
+Primary agent has reached destination in 12 steps!
+Primary agent has reached destination in 15 steps!
+Primary agent has reached destination in 13 steps!
+Primary agent has reached destination in 7 steps!
+Primary agent has reached destination in 20 steps!
+Primary agent has reached destination in 9 steps!
+Primary agent has reached destination in 7 steps!
+Primary agent has reached destination in 8 steps!
+Primary agent has reached destination in 4 steps!
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
+Primary agent could not reach destination within deadline!
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
+Primary agent has reached destination in 36 steps!
+
+Parameters: pRandomMove: 0.05, Learning Rate: 0.1, gamma: 0.5
+-------------------------------------------------------
+Primary agent could not reach destination within deadline!

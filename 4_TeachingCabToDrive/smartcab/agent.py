@@ -11,7 +11,7 @@ script_dir = os.path.dirname(__file__)
 path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
 #path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
 
-DEBUG = True
+DEBUG = False
 
 
 class QTable(object):
@@ -86,30 +86,26 @@ class QLearn(Agent):
 
         return action
 
-    #Even though the agent just moved, This is from its perspective BEFORE the move, so:
-    #   State, Action: What the agent just did (where it was and what it considered the best action
-    #   Next State: Where it is
-    #   Reward: it got for the move
+
     #Implement:
-    #Q(s,a) = Q(s,a) + alpha * [R(s,a) + gamma * argmax(R(s', a')) - Q(s, a)]        
-    def Learn(self, state, action, next_state, reward):
-        currentQValue = self.QTable.get(state, action)
-        alpha = self.learning_rate # for simplicity of the formula only
-        #Get the Possible Future Rewards From The Current State 
+    #Q(s,a) = Q(s,a) + alpha * [R(s,a) + gamma * argmax(R(s', a')) - Q(s, a)]
+    def Learn(self, StateWhereIWas, ActionITook, StateWhereIAm, RewardIGot):
+        currentQValue = self.QTable.get(StateWhereIWas, ActionITook)
+        alpha = self.learning_rate #Adding to a variable for simplicity of the formula only
+
+        #Get the Possible Future Rewards From The Current State
         pr = []
         for pa in self.possible_actions: #for each possible action
-            pr.append(self.QTable.get(next_state, pa))
+            pr.append(self.QTable.get(StateWhereIAm, pa))
 
-        FutureReward = max(pr) 
-        if FutureReward is None:
-            FutureReward = 0.0
+        FutureReward = 0 if max(pr) is None else max(pr)
         
         
-        #      alpha * [R(s,a) +    gamma   * argmax(R(s', a')) - Q(s, a)]
-        newQ = alpha * (reward + self.gamma *   FutureReward    - currentQValue)
-        newQ =  currentQValue + newQ
-                
-        self.QTable.set(state, action, newQ)
+        #Q(s,a) =      Q(s,a)   + alpha * [R(s,a)     +    gamma   *  argmax(R(s', a')) - Q(s, a)]
+        newQ    = currentQValue + alpha * (RewardIGot + self.gamma *    FutureReward    - currentQValue)
+
+        #Update the QTable with the
+        self.QTable.set(StateWhereIWas, ActionITook, newQ)
         
 
 class QLearningAgent(Agent):
@@ -142,15 +138,19 @@ class QLearningAgent(Agent):
         self.state = (loc[0][1],loc[1][1],loc[2][1],loc[3][1],self.next_waypoint)
 
         action = self.QLearning.GetNextPossibleBestAction(self.state)
-        reward = self.env.act(self, action)# Execute action and get reward (-1, 0.5,1 or 2)
+        reward = self.env.act(self, action)#Execute action and get reward (-1, 0.5,1 or 2)
         if DEBUG:
-            print 'Action Chosen:' , action, 'reward: ', reward
+            print 'Action Chosen:', action, 'reward: ', reward
 
 
         #Sense the New location
         newloc = self.env.sense(self).items()
         next_state = (newloc[0][1],newloc[1][1],newloc[2][1],newloc[3][1], self.next_waypoint)
 
+        #Even though the agent just moved, the call bellow is from its perspective BEFORE the move, so:
+        #   State, Action: What the agent just did (where it was and what it considered the best action)
+        #   Next State: Where it is
+        #   Reward: it got for the move
         self.QLearning.Learn(self.state, action, next_state, reward)
 
         deadline = self.env.get_deadline(self)
@@ -158,7 +158,7 @@ class QLearningAgent(Agent):
             print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, loc, action, reward)  # [debug]
 
 
-
+#This is the Ramdom Learning Agente, that only takes Random moves
 class LearningAgent(Agent):
     def __init__(self, env):
         super(LearningAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
@@ -200,22 +200,24 @@ def run():
     #e.set_start_location_and_dest((1,1), (8,6)) set the Start Location
     #a = e.create_agent(LearningAgent)  # create agent
 
-
+    #ep = 0.05
+    #al =0.5
+    #ga = 0.9
     #pRandomMove\learning_rate\gamma
-    #for ep in np.arange(0, 0.55, 0.05):
-    #    for al in np.arange(0, 1.1, 0.1):
-    #        for ga in np.arange(0, 1.1, 0.1):
-    e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
-    e.DEBUG = DEBUG
-    a = e.create_agent(QLearningAgent, pRandomMove=0.05, learning_rate =0.1, gamma=0.5)
-    e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+    for ep in np.arange(0, 0.20, 0.05):
+        for al in np.arange(0, 1.1, 0.2):
+            for ga in np.arange(0, 1.1, 0.2):
+                e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
+                e.DEBUG = DEBUG
+                a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate = al, gamma=ga)
+                e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
-    sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=1)  # press Esc or close pygame window to quit
+                sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
+                sim.run(n_trials=10)  # press Esc or close pygame window to quit
 
 
     print tabulate(e.dfLog, list(e.dfLog.columns), tablefmt="grid")
-    e.dfLog.to_csv("dfLog-20-trials.csv")
+    e.dfLog.to_csv("dfLog-10-trials.csv")
 
 
 if __name__ == '__main__':

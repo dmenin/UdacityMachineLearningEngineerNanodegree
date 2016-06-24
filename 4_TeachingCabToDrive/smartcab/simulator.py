@@ -1,6 +1,5 @@
 import os
 import time
-import random
 import pygame
 
 class Simulator(object):
@@ -17,7 +16,6 @@ class Simulator(object):
         'yellow'  : (255, 255,   0),
         'orange'  : (255, 128,   0)
     }
-
     def __init__(self, env, size=None, frame_delay=10, update_delay=1.0):
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 1) * self.env.block_size)

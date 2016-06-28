@@ -8,10 +8,10 @@ from tabulate import tabulate
 import numpy as np
 
 script_dir = os.path.dirname(__file__)
-path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
-#path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
+#path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
+path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
 
-DEBUG = False
+DEBUG = True
 
 
 class QTable(object):
@@ -104,7 +104,7 @@ class QLearn(Agent):
         #Q(s,a) =      Q(s,a)   + alpha * [R(s,a)     +    gamma   *  argmax(R(s', a')) - Q(s, a)]
         newQ    = currentQValue + alpha * (RewardIGot + self.gamma *    FutureReward    - currentQValue)
 
-        #Update the QTable with the
+        #Update the QTable with the new value
         self.QTable.set(StateWhereIWas, ActionITook, newQ)
         
 
@@ -115,8 +115,6 @@ class QLearningAgent(Agent):
         self.color = 'red'  # override color
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         self.possible_actions= Environment.valid_actions
-        #self.QLearning = QLearn(pRandomMove=.05, learning_rate =0.1, gamma=0.5)
-
         self.QLearning = QLearn(pRandomMove, learning_rate, gamma)
 
 
@@ -202,20 +200,20 @@ def run():
     #a = e.create_agent(LearningAgent)  # create agent
 
     ep = 0.1
+    al =0.25
+    ga = 0.35
 
-    #al =0.5
-    #ga = 0.9
     #pRandomMove\learning_rate\gamma
     #for ep in np.arange(0.1, 0.25, 0.05):
-    for al in np.arange(0.2, 0.45, 0.05):
-        for ga in np.arange(0.2, 0.45, 0.05):
-            e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
-            e.DEBUG = DEBUG
-            a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate = al, gamma=ga)
-            e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+    #for al in np.arange(0.2, 0.45, 0.05):
+    #    for ga in np.arange(0.2, 0.45, 0.05):
+    e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
+    e.DEBUG = DEBUG
+    a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate = al, gamma=ga)
+    e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
-            sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
-            sim.run(n_trials=100) # press Esc or close pygame window to quit
+    sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
+    sim.run(n_trials=10) # press Esc or close pygame window to quit
 
 
     print tabulate(e.dfLog, list(e.dfLog.columns), tablefmt="grid")

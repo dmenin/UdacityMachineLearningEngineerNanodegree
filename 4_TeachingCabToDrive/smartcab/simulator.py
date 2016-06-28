@@ -95,8 +95,13 @@ class Simulator(object):
         # Draw elements
         # * Static elements
         for road in self.env.roads:
-            #pygame.draw.line(self.screen, self.road_color, (road[0][0] * self.env.block_size, road[0][1] * self.env.block_size), (road[1][0] * self.env.block_size, road[1][1] * self.env.block_size), self.road_width)
-            pygame.draw.line(self.screen, self.road_color, (road[0][0] * self.env.block_size, road[0][1] * self.env.block_size), (road[1][0] * self.env.block_size, road[1][1] * self.env.block_size), self.road_width)
+            pygame.draw.line(self.screen,
+                             self.road_color,
+                             (road[0][0] * self.env.block_size, road[0][1] * self.env.block_size),
+                             (road[1][0] * self.env.block_size, road[1][1] * self.env.block_size),
+                             self.road_width)
+
+            #print (road[0][0], road[0][1] )
 
         for intersection, traffic_light in self.env.intersections.iteritems():
             pygame.draw.circle(self.screen, self.road_color, (intersection[0] * self.env.block_size, intersection[1] * self.env.block_size), 10)

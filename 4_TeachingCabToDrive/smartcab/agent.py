@@ -158,7 +158,8 @@ class QLearningAgent(Agent):
             print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, loc, action, reward)  # [debug]
 
 
-#This is the Ramdom Learning Agente, that only takes Random moves
+#This is the Ramdom Learning Agent, that only takes Random moves
+#Is not really a Learning Agent, I just kept the original name to avoid confusion
 class LearningAgent(Agent):
     def __init__(self, env):
         super(LearningAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
@@ -200,24 +201,25 @@ def run():
     #e.set_start_location_and_dest((1,1), (8,6)) set the Start Location
     #a = e.create_agent(LearningAgent)  # create agent
 
-    #ep = 0.05
+    ep = 0.1
+
     #al =0.5
     #ga = 0.9
     #pRandomMove\learning_rate\gamma
-    for ep in np.arange(0, 0.20, 0.05):
-        for al in np.arange(0, 1.1, 0.2):
-            for ga in np.arange(0, 1.1, 0.2):
-                e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
-                e.DEBUG = DEBUG
-                a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate = al, gamma=ga)
-                e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+    #for ep in np.arange(0.1, 0.25, 0.05):
+    for al in np.arange(0.2, 0.45, 0.05):
+        for ga in np.arange(0.2, 0.45, 0.05):
+            e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
+            e.DEBUG = DEBUG
+            a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate = al, gamma=ga)
+            e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
-                sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
-                sim.run(n_trials=10)  # press Esc or close pygame window to quit
+            sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
+            sim.run(n_trials=100) # press Esc or close pygame window to quit
 
 
     print tabulate(e.dfLog, list(e.dfLog.columns), tablefmt="grid")
-    e.dfLog.to_csv("dfLog-10-trials.csv")
+    e.dfLog.to_csv("dfLog-100-trials-tak2.csv")
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 # Train a Smartcab How to Drive
 
-![](//images//environment.jpg)
+![](images//environment.jpg)
 
 
 Reinforcement Learning Project

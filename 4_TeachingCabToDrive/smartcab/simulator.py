@@ -18,12 +18,12 @@ class Simulator(object):
     }
     def __init__(self, env, size=None, frame_delay=10, update_delay=1.0):
         self.env = env
-        self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 1) * self.env.block_size)
+        self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.Xblock_size, ((self.env.grid_size[1] + 1) * self.env.Yblock_size) +100)
         self.width, self.height = self.size
         self.frame_delay = frame_delay
 
         self.bg_color = self.colors['white']
-        self.road_width = 5
+        self.road_width = 3
         self.road_color = self.colors['black']
 
         self.quit = False
@@ -33,15 +33,18 @@ class Simulator(object):
         self.update_delay = update_delay
 
         pygame.init()
+        self.bg = pygame.image.load(os.path.join("images", "backgroudNY.png"))
+
+
         self.screen = pygame.display.set_mode(self.size)
 
-        self.agent_sprite_size = (32, 32)
-        self.agent_circle_radius = 10  # radius of circle, when using simple representation
+        self.agent_sprite_size = (24, 24) #(32,32)
+        self.agent_circle_radius = 7  #20 radius of circle, when using simple representation
         for agent in self.env.agent_states:
             agent._sprite = pygame.transform.smoothscale(pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
             agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
 
-        self.font = pygame.font.Font(None, 28)
+        self.font = pygame.font.Font(None, 16)#28
         self.paused = False
 
     def run(self, n_trials=1):
@@ -91,34 +94,37 @@ class Simulator(object):
     def render(self):
         # Clear screen
         self.screen.fill(self.bg_color)
+        self.screen.blit(self.bg, (-5,-10))
 
         # Draw elements
         # * Static elements
         for road in self.env.roads:
+            #if road == ((1, 1), (2, 1)):
             pygame.draw.line(self.screen,
                              self.road_color,
-                             (road[0][0] * self.env.block_size, road[0][1] * self.env.block_size),
-                             (road[1][0] * self.env.block_size, road[1][1] * self.env.block_size),
+                             (road[0][0] * self.env.Xblock_size, road[0][1] * self.env.Yblock_size),
+                             (road[1][0] * self.env.Xblock_size, road[1][1] * self.env.Yblock_size),
                              self.road_width)
 
             #print (road[0][0], road[0][1] )
 
         for intersection, traffic_light in self.env.intersections.iteritems():
-            pygame.draw.circle(self.screen, self.road_color, (intersection[0] * self.env.block_size, intersection[1] * self.env.block_size), 10)
+            #if intersection == (1, 1) or intersection == (2, 1):
+            pygame.draw.circle(self.screen, self.road_color, (intersection[0] * self.env.Xblock_size, intersection[1] * self.env.Yblock_size),self.agent_circle_radius)
             if traffic_light.state:  # North-South is open
                 pygame.draw.line(self.screen, self.colors['green'],
-                    (intersection[0] * self.env.block_size, intersection[1] * self.env.block_size - 15),
-                    (intersection[0] * self.env.block_size, intersection[1] * self.env.block_size + 15), self.road_width)
+                    (intersection[0] * self.env.Xblock_size, intersection[1] * self.env.Yblock_size - 10),
+                    (intersection[0] * self.env.Xblock_size, intersection[1] * self.env.Yblock_size + 10), self.road_width)
             else:  # East-West is open
                 pygame.draw.line(self.screen, self.colors['green'],
-                    (intersection[0] * self.env.block_size - 15, intersection[1] * self.env.block_size),
-                    (intersection[0] * self.env.block_size + 15, intersection[1] * self.env.block_size), self.road_width)
+                    (intersection[0] * self.env.Xblock_size - 10, intersection[1] * self.env.Yblock_size),
+                    (intersection[0] * self.env.Xblock_size + 10, intersection[1] * self.env.Yblock_size), self.road_width)
 
         # * Dynamic elements
         for agent, state in self.env.agent_states.iteritems():
             # Compute precise agent location here (back from the intersection some)
             agent_offset = (2 * state['heading'][0] * self.agent_circle_radius, 2 * state['heading'][1] * self.agent_circle_radius)
-            agent_pos = (state['location'][0] * self.env.block_size - agent_offset[0], state['location'][1] * self.env.block_size - agent_offset[1])
+            agent_pos = (state['location'][0] * self.env.Xblock_size - agent_offset[0], state['location'][1] * self.env.Yblock_size - agent_offset[1])
             agent_color = self.colors[agent.color]
             if hasattr(agent, '_sprite') and agent._sprite is not None:
                 # Draw agent sprite (image), properly rotated
@@ -133,13 +139,14 @@ class Simulator(object):
             if agent.get_next_waypoint() is not None:
                 self.screen.blit(self.font.render(agent.get_next_waypoint(), True, agent_color, self.bg_color), (agent_pos[0] + 10, agent_pos[1] + 10))
             if state['destination'] is not None:
-                pygame.draw.circle(self.screen, agent_color, (state['destination'][0] * self.env.block_size, state['destination'][1] * self.env.block_size), 6)
-                pygame.draw.circle(self.screen, agent_color, (state['destination'][0] * self.env.block_size, state['destination'][1] * self.env.block_size), 15, 2)
+                pygame.draw.circle(self.screen, agent_color, (state['destination'][0] * self.env.Xblock_size, state['destination'][1] * self.env.Yblock_size), 6)
+                pygame.draw.circle(self.screen, agent_color, (state['destination'][0] * self.env.Xblock_size, state['destination'][1] * self.env.Yblock_size), 15, 2)
 
         # * Overlays
-        text_y = 10
+        textFont= pygame.font.SysFont(None, 28)
+        text_y = 650
         for text in self.env.status_text.split('\n'):
-            self.screen.blit(self.font.render(text, True, self.colors['red'], self.bg_color), (100, text_y))
+            self.screen.blit(textFont.render(text, True, self.colors['red'], self.bg_color), (100, text_y))
             text_y += 20
 
         # Flip buffers

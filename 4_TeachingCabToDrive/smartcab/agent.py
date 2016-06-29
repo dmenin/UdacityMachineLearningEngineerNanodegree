@@ -11,7 +11,7 @@ script_dir = os.path.dirname(__file__)
 #path = "C:/git/UdacityMachineLearningEngineerNanodegree/4_TeachingCabToDrive/smartcab/runreport/output_qlearning.txt"#
 path = os.path.join(script_dir, 'runreport/output_qlearning.txt')
 
-DEBUG = True
+DEBUG = False
 
 
 class QTable(object):
@@ -27,12 +27,15 @@ class QTable(object):
         key = (state, action)
         self.Q[key] = q
     
-    def prettyPrint(self):
+    def prettyPrint(self, returndf=False):
         df = pd.DataFrame(columns=['State (light / oncoming / right / left)','action','reward'])
         for k, v in self.Q.items():
             df.loc[len(df)] = [k[0],k[1],v]
         print 'QTable:'
         print tabulate(df, list(df.columns), tablefmt="grid")
+
+        if returndf:
+            return df
 
     def simplePrint(self):
         for k, v in self.Q.items():
@@ -200,24 +203,24 @@ def run():
     #a = e.create_agent(LearningAgent)  # create agent
 
     ep = 0.1
-    al =0.25
-    ga = 0.35
+    al = 0.2
+    ga = 0.2
 
     #pRandomMove\learning_rate\gamma
     #for ep in np.arange(0.1, 0.25, 0.05):
     #for al in np.arange(0.2, 0.45, 0.05):
-    #    for ga in np.arange(0.2, 0.45, 0.05):
+    #for ga in np.arange(0.2, 0.45, 0.05):
     e = Environment(logfilepath=path) #create environment (also adds some dummy traffic)
     e.DEBUG = DEBUG
     a = e.create_agent(QLearningAgent, pRandomMove=ep, learning_rate = al, gamma=ga)
     e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
     sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=10) # press Esc or close pygame window to quit
+    sim.run(n_trials=100) # press Esc or close pygame window to quit
 
 
     print tabulate(e.dfLog, list(e.dfLog.columns), tablefmt="grid")
-    e.dfLog.to_csv("dfLog-100-trials-tak2.csv")
+    #e.dfLog.to_csv("dfLog-100-trials-tak3.csv")
 
 
 if __name__ == '__main__':

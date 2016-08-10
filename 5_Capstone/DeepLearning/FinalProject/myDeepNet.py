@@ -1,7 +1,10 @@
 import tensorflow as tf
+import mnist_data
 from tensorflow.examples.tutorials.mnist import input_data
 
-mnist = input_data.read_data_sets("mydata", one_hot=True)
+#mnist = input_data.read_data_sets("mydata", one_hot=True)
+mnist = mnist_data.read_data_sets("mydata")
+
 
 n_nodes_hl1 = 500
 n_nodes_hl2 = 500
@@ -10,11 +13,12 @@ n_nodes_hl3 = 500
 n_classes = 10
 batch_size = 100
 
-x = tf.placeholder('float',[None,784])
+#x = tf.placeholder(tf.float32,[None,784])
+x = tf.placeholder(tf.float32, [None, 28, 28, 1])
 y = tf.placeholder('float')
 
 
-def neural_network_model(data):
+def NeuralNet1(data):
 	hidden_1_layer = {'weights': tf.Variable(tf.random_normal([784, n_nodes_hl1])),
 					  'biases' : tf.Variable(tf.random_normal([n_nodes_hl1]))}
 
@@ -43,12 +47,12 @@ def neural_network_model(data):
 
 
 def train_neural_network(x):
-	prediction = neural_network_model(x)
+	prediction = NeuralNet1(x)
 	cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y))
 	optimizer = tf.train.AdamOptimizer().minimize(cost)
 
 	#cycles of feed forward + backprop
-	hm_epochs = 10
+	hm_epochs = 1
 
 	with tf.Session() as sess:
 		sess.run(tf.initialize_all_variables())

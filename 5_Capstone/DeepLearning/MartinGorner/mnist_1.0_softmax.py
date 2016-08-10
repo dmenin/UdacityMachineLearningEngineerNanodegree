@@ -1,18 +1,3 @@
-# encoding: UTF-8
-# Copyright 2016 Google.com
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import tensorflow as tf
 import mnist_data
 import tensorflowvisu
@@ -36,7 +21,8 @@ tf.set_random_seed(0)
 #              Y: output matrix with 100 lines and 10 columns
 
 # Download images and labels
-mnist = mnist_data.read_data_sets("data")
+mnist = mnist_data.read_data_sets("data") #data is the folder name
+
 
 # input X: 28x28 grayscale images, the first dimension (None) will index the images in the mini-batch
 X = tf.placeholder(tf.float32, [None, 28, 28, 1])

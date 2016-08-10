@@ -1,0 +1,11 @@
+1:
+one layer
+
+2:
+five layers sigmoid
+
+2.1:
+five layers - relu and learning rate decay
+
+2.2:
+five layers - relu and learning rate decay + dropout

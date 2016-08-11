@@ -1,17 +1,4 @@
 # encoding: UTF-8
-# Copyright 2016 Google.com
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 import tensorflow as tf
 import numpy as np
@@ -353,6 +340,7 @@ class MnistDataVis:
     def animate(self, compute_step, iterations, train_data_update_freq=20, test_data_update_freq=100, one_test_at_start=True, more_tests_at_start=False, save_movie=False):
 
         def animate_step(i):
+            #print 'step:', i
             if (i == iterations // train_data_update_freq): #last iteration
                 compute_step(iterations, True, True)
             else:
@@ -367,7 +355,13 @@ class MnistDataVis:
             if not self.is_paused():
                 return self._mpl_update_func()
 
-        self._animation = animation.FuncAnimation(self._mpl_figure, animate_step, int(iterations // train_data_update_freq + 1), init_func=self._mlp_init_func, interval=16, repeat=False, blit=False)
+        print 'aaaaaaaaaaaaaaaaaaaaaaaaa',int(iterations // train_data_update_freq + 1)
+
+        self._animation = animation.FuncAnimation(self._mpl_figure, animate_step, 
+            15, init_func=self._mlp_init_func, 
+            interval=16, repeat=False, blit=False)
+
+
 
         if save_movie:
             mywriter = animation.FFMpegWriter(fps=24, codec='libx264', extra_args=['-pix_fmt', 'yuv420p', '-profile:v', 'high', '-tune', 'animation', '-crf', '18'])

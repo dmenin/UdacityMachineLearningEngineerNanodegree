@@ -72,21 +72,28 @@ def create_nn_model():
     return Ylogits,W1,W2,W3,W4,W5,B1,B2,B3,B4,B5
 
 #weights and biases to be removed
+predictions,W1,W2,W3,W4,W5,B1,B2,B3,B4,B5  = create_nn_model() 
 
-predictions,W1,W2,W3,W4,W5,B1,B2,B3,B4,B5  = create_nn_model()
 #calculates the difference between the predicion we got to the known labels we have
-#VAR renamed cross_entropy -> cost
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(predictions, Y_))*100
+#VAR renamed cross_entropy -> loss (could be  cost)
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(predictions, Y_))*100
 
-#minimize the cost (the difference between prediciton and Y_)
-#training step, the learning rate is a placeholder
+#minimize the loss (the difference between prediciton and Y_)
+#piece of the computation graph that computes the gradient, applies the gradient to the weights and biases
+#to obtain new weights and biases
 #VAR renamed train_step -> optimizer
-optimizer = tf.train.AdamOptimizer(lr).minimize(cost)
+optimizer = tf.train.AdamOptimizer(lr).minimize(loss)
 
 
+# initialize
+sess = tf.Session() 
+sess.run(tf.initialize_all_variables())
 
 
 Y = tf.nn.softmax(predictions)
+
+
+
 
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)
@@ -101,14 +108,19 @@ It = tensorflowvisu.tf_format_mnist_images(X, Y, Y_, 1000, lines=25)
 datavis = tensorflowvisu.MnistDataVis()
 
 
-# init
-init = tf.initialize_all_variables()
-sess = tf.Session()
-sess.run(init)
+
+
+
+
+
+
+# cicles of feedforward + backprop
+num_epoch = 2
 
 
 # You can call this function in a loop to train the model, 100 images at a time
 def training_step(i, update_test_data, update_train_data):
+    #print update_test_data, update_train_data
 
     # training on batches of 100 images with 100 labels
     batch_X, batch_Y = mnist.train.next_batch(100)
@@ -121,39 +133,47 @@ def training_step(i, update_test_data, update_train_data):
 
     # compute training values for visualisation
     if update_train_data:
-        a, c, im, w, b = sess.run([accuracy, cost, I, allweights, allbiases], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
+        a, c, im, w, b = sess.run([accuracy, loss, I, allweights, allbiases], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
         print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
-        datavis.append_training_curves_data(i, a, c)
-        datavis.update_image1(im)
-        datavis.append_data_histograms(i, w, b)
+
 
     # compute test values for visualisation
     if update_test_data:
-        a, c, im = sess.run([accuracy, cost, It], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
+        a, c, im = sess.run([accuracy, loss, It], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-        datavis.append_test_curves_data(i, a, c)
-        datavis.update_image2(im)
+
 
     # the backpropagation training step
     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
 
-datavis.animate(training_step, 10001, train_data_update_freq=20, test_data_update_freq=100)
+
+
+def animate(compute_step, iterations, train_data_update_freq=20, test_data_update_freq=100, one_test_at_start=True, more_tests_at_start=False, save_movie=False):
+
+    def animate_step(i):
+        #print 'step:', i
+        if (i == iterations // train_data_update_freq): #last iteration
+            compute_step(iterations, True, True)
+        else:
+            for k in range(train_data_update_freq):
+                n = i * train_data_update_freq + k
+                request_data_update = (n % train_data_update_freq == 0)
+                request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
+                if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
+                compute_step(n, request_test_data_update, request_data_update)
+                # makes the UI a little more responsive
+
+    for i in range(int(iterations // train_data_update_freq + 1)):
+        animate_step(i)
+
+
+animate(training_step, 10001, train_data_update_freq=20, test_data_update_freq=100)
+print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
+
+#for i in range(10001):
+#    training_step(i,20,100)
 
 # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
 # to disable the visualisation use the following line instead of the datavis.animate line
 # for i in range(10000+1): training_step(i, i % 100 == 0, i % 20 == 0)
 
-print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
-
-## All runs 10K iterations:
-# layers 4 8 12 200, patches 5x5str1 5x5str2 4x4str2 best 0.989
-# layers 4 8 12 200, patches 5x5str1 4x4str2 4x4str2 best 0.9892
-# layers 6 12 24 200, patches 5x5str1 4x4str2 4x4str2 best 0.9908 after 10000 iterations but going downhill from 5000 on
-# layers 6 12 24 200, patches 5x5str1 4x4str2 4x4str2 dropout=0.75 best 0.9922  (but above 0.99 after 1400 iterations only)
-# layers 4 8 12 200, patches 5x5str1 4x4str2 4x4str2 dropout=0.75, best 0.9914 at 13700 iterations
-# layers 9 16 25 200, patches 5x5str1 4x4str2 4x4str2 dropout=0.75, best 0.9918 at 10500 (but 0.99 at 1500 iterations already, 0.9915 at 5800)
-# layers 9 16 25 300, patches 5x5str1 4x4str2 4x4str2 dropout=0.75, best 0.9916 at 5500 iterations (but 0.9903 at 1200 iterations already)
-# attempts with 2 fully-connected layers: no better 300 and 100 neurons, dropout 0.75 and 0.5, 6x6 5x5 4x4 patches no better
-# layers 6 12 24 200, patches 6x6str1 5x5str2 4x4str2 no dropout best 0.9906 after 3100 iterations (avove 0.99 from iteration 1400)
-#*layers 6 12 24 200, patches 6x6str1 5x5str2 4x4str2 dropout=0.75 best 0.9928 after 12800 iterations (but consistently above 0.99 after 1300 iterations only, 0.9916 at 2300 iterations, 0.9921 at 5600, 0.9925 at 20000)
-#*same with dacaying learning rate 0.003-0.0001-2000: best 0.9931 (on other runs max accuracy 0.9921, 0.9927, 0.9935, 0.9929, 0.9933)

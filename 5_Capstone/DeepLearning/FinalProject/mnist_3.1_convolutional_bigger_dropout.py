@@ -100,26 +100,18 @@ Y = tf.nn.softmax(predictions)
 correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-# matplotlib visualisation
-allweights = tf.concat(0, [tf.reshape(W1, [-1]), tf.reshape(W2, [-1]), tf.reshape(W3, [-1]), tf.reshape(W4, [-1]), tf.reshape(W5, [-1])])
-allbiases  = tf.concat(0, [tf.reshape(B1, [-1]), tf.reshape(B2, [-1]), tf.reshape(B3, [-1]), tf.reshape(B4, [-1]), tf.reshape(B5, [-1])])
-I = tensorflowvisu.tf_format_mnist_images(X, Y, Y_)
-It = tensorflowvisu.tf_format_mnist_images(X, Y, Y_, 1000, lines=25)
-datavis = tensorflowvisu.MnistDataVis()
-
-
-
-
-
 
 
 
 # cicles of feedforward + backprop
 num_epoch = 2
 
+maxAcc=0
+
 
 # You can call this function in a loop to train the model, 100 images at a time
 def training_step(i, update_test_data, update_train_data):
+    print i
     #print update_test_data, update_train_data
 
     # training on batches of 100 images with 100 labels
@@ -131,44 +123,55 @@ def training_step(i, update_test_data, update_train_data):
     decay_speed = 2000
     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i/decay_speed)
 
-    # compute training values for visualisation
+    # print train
     if update_train_data:
-        a, c, im, w, b = sess.run([accuracy, loss, I, allweights, allbiases], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
+        a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
         print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
 
 
-    # compute test values for visualisation
+    # print test
     if update_test_data:
-        a, c, im = sess.run([accuracy, loss, It], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
+        a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-
+        #datavis.append_test_curves_data(i, a, c)
+        #if (a > maxAcc):
+        #    maxAcc = a
 
     # the backpropagation training step
     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
 
 
 
-def animate(compute_step, iterations, train_data_update_freq=20, test_data_update_freq=100, one_test_at_start=True, more_tests_at_start=False, save_movie=False):
-
-    def animate_step(i):
-        #print 'step:', i
-        if (i == iterations // train_data_update_freq): #last iteration
-            compute_step(iterations, True, True)
-        else:
-            for k in range(train_data_update_freq):
-                n = i * train_data_update_freq + k
-                request_data_update = (n % train_data_update_freq == 0)
-                request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
-                if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
-                compute_step(n, request_test_data_update, request_data_update)
-                # makes the UI a little more responsive
-
-    for i in range(int(iterations // train_data_update_freq + 1)):
-        animate_step(i)
+iterations = 10001
+train_data_update_freq = 20
+test_data_update_freq=100
+one_test_at_start=True
+more_tests_at_start=False
 
 
-animate(training_step, 10001, train_data_update_freq=20, test_data_update_freq=100)
-print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
+
+for i in range(int(iterations // train_data_update_freq + 1)): #500
+    if (i == iterations // train_data_update_freq): #last iteration
+        training_step(iterations, True, True)
+    else:
+        for k in range(train_data_update_freq):
+            n = i * train_data_update_freq + k
+            request_data_update = (n % train_data_update_freq == 0)
+            request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
+            #print n, request_data_update, request_test_data_update
+            if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
+            training_step(n, request_test_data_update, request_data_update)
+
+
+
+
+
+
+#print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
+
+
+# from datetime import datetime
+# print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 #for i in range(10001):
 #    training_step(i,20,100)

@@ -69,10 +69,10 @@ def create_nn_model():
     YY4 = tf.nn.dropout(Y4, pkeep)
     Ylogits = tf.matmul(YY4, W5) + B5
 
-    return Ylogits,W1,W2,W3,W4,W5,B1,B2,B3,B4,B5
+    return Ylogits
 
 #weights and biases to be removed
-predictions,W1,W2,W3,W4,W5,B1,B2,B3,B4,B5  = create_nn_model() 
+predictions  = create_nn_model()
 
 #calculates the difference between the predicion we got to the known labels we have
 #VAR renamed cross_entropy -> loss (could be  cost)
@@ -92,10 +92,6 @@ sess.run(tf.initialize_all_variables())
 
 Y = tf.nn.softmax(predictions)
 
-
-
-
-
 # accuracy of the trained model, between 0 (worst) and 1 (best)
 correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -104,9 +100,9 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
 # cicles of feedforward + backprop
-num_epoch = 2
-
+num_epochs = 2
 maxAcc=0
+batch_size = 100
 
 
 # You can call this function in a loop to train the model, 100 images at a time
@@ -133,18 +129,15 @@ def training_step(i, update_test_data, update_train_data):
         #datavis.append_test_curves_data(i, a, c)
         #if (a > maxAcc):
         #    maxAcc = a
-
     # the backpropagation training step
     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
 
 
-
-iterations = 10001
+iterations = 100
 train_data_update_freq = 20
 test_data_update_freq=100
 one_test_at_start=True
 more_tests_at_start=False
-
 
 
 for i in range(int(iterations // train_data_update_freq + 1)): #500

@@ -357,8 +357,8 @@ class MnistDataVis:
 
         print 'aaaaaaaaaaaaaaaaaaaaaaaaa',int(iterations // train_data_update_freq + 1)
 
-        self._animation = animation.FuncAnimation(self._mpl_figure, animate_step, 
-            15, init_func=self._mlp_init_func, 
+        self._animation = animation.FuncAnimation(self._mpl_figure, animate_step,
+            15, init_func=self._mlp_init_func,
             interval=16, repeat=False, blit=False)
 
 

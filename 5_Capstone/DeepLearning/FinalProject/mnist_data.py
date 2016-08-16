@@ -185,6 +185,7 @@ def read_data_sets(train_dir, one_hot=True, dtype=tf.float32, flatten_images=Fal
     TEST_IMAGES = 't10k-images-idx3-ubyte.gz'
     TEST_LABELS = 't10k-labels-idx1-ubyte.gz'
 
+
     local_file = maybe_download_and_extract(TRAIN_IMAGES, train_dir)
     train_images = extract_images(local_file)
 

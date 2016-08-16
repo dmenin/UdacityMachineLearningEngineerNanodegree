@@ -92,8 +92,8 @@ optimizer = tf.train.AdamOptimizer(lr).minimize(loss)
 
 
 # initialize
-#sess = tf.Session()
-
+sess = tf.Session() 
+sess.run(tf.initialize_all_variables())
 
 
 Y = tf.nn.softmax(predictions)
@@ -111,80 +111,53 @@ maxAcc=0
 batch_size = 100
 
 
-# # You can call this function in a loop to train the model, 100 images at a time
-# def training_step(i, update_test_data, update_train_data):
-#     # training on batches of 100 images with 100 labels
-#     batch_X, batch_Y = mnist.train.next_batch(100)
-#
-#     # learning rate decay
-#     max_learning_rate = 0.003
-#     min_learning_rate = 0.0001
-#     decay_speed =2000.
-#     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i/decay_speed)
-#     #print min_learning_rate, (max_learning_rate - min_learning_rate) , -i/decay_speed, math.exp(-i/decay_speed), learning_rate
-#
-#     # print train
-#     if update_train_data:
-#         a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
-#         print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
-#
-#
-#     # print test
-#     if update_test_data:
-#         a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
-#         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-#         #datavis.append_test_curves_data(i, a, c)
-#         #if (a > maxAcc):
-#         #    maxAcc = a
-#     # the backpropagation training step
-#     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
+# You can call this function in a loop to train the model, 100 images at a time
+def training_step(i, update_test_data, update_train_data):
+    # training on batches of 100 images with 100 labels
+    batch_X, batch_Y = mnist.train.next_batch(100)
+
+    # learning rate decay
+    max_learning_rate = 0.003
+    min_learning_rate = 0.0001
+    decay_speed =2000.
+    learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i/decay_speed)
+    #print min_learning_rate, (max_learning_rate - min_learning_rate) , -i/decay_speed, math.exp(-i/decay_speed), learning_rate
+
+    # print train
+    if update_train_data:
+        a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
+        print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
 
 
-iterations = 100#10001#100
+    # print test
+    if update_test_data:
+        a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
+        print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
+        #datavis.append_test_curves_data(i, a, c)
+        #if (a > maxAcc):
+        #    maxAcc = a
+    # the backpropagation training step
+    sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
+
+
+iterations = 10001#100
 train_data_update_freq = 20
 test_data_update_freq=100
 one_test_at_start=True
 more_tests_at_start=False
 
-# learning rate decay
-max_learning_rate = 0.003
-min_learning_rate = 0.0001
-decay_speed = 2000.
 
-
-with tf.Session() as sess:
-    sess.run(tf.initialize_all_variables())
-
-    for i in range(int(iterations // train_data_update_freq + 1)): #500
-        # if (i == iterations // train_data_update_freq): #last iteration
-        #     training_step(iterations, True, True)
-        # else:
+for i in range(int(iterations // train_data_update_freq + 1)): #500
+    if (i == iterations // train_data_update_freq): #last iteration
+        training_step(iterations, True, True)
+    else:
         for k in range(train_data_update_freq):
             n = i * train_data_update_freq + k
             request_data_update = (n % train_data_update_freq == 0)
             request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
+            #print n, request_data_update, request_test_data_update
             if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
-
-
-
-            batch_X, batch_Y = mnist.train.next_batch(100)
-            learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i / decay_speed)
-
-            if request_data_update:
-                a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
-                print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
-
-            # print test
-            if request_test_data_update:
-                a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
-                print(str(i) + ": ********* epoch " + str(i * 100 // mnist.train.images.shape[0] + 1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-                # datavis.append_test_curves_data(i, a, c)
-                # if (a > maxAcc):
-                #    maxAcc = a
-
-            # the backpropagation training step
-            sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
-
+            training_step(n, request_test_data_update, request_data_update)
 
 
 

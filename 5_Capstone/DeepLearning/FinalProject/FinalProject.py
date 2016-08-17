@@ -7,7 +7,6 @@ import math
 tf.set_random_seed(0)
 
 # Download images and labels
-mnist = mnist_data.read_data_sets("mydata")
 
 # neural network structure for this sample:
 #
@@ -22,9 +21,11 @@ mnist = mnist_data.read_data_sets("mydata")
 #       · · · ·                                                 Y4 [batch, 200]
 #       \x/x\x/         -- fully connected layer (softmax)      W5 [200, 10]           B5 [10]
 #        · · ·                                                  Y [batch, 20]
+mnist = 0
 
-
-
+def LoadDataSet():
+    global mnist
+    mnist  = mnist_data.read_data_sets("mydata")
 
 
 # input X: 28x28 grayscale images, the first dimension (None) will index the images in the mini-batch
@@ -35,9 +36,6 @@ Y_ = tf.placeholder(tf.float32, [None, 10])
 lr = tf.placeholder(tf.float32)
 # Probability of keeping a node during dropout = 1.0 at test time (no dropout) and 0.75 at training time
 pkeep = tf.placeholder(tf.float32)
-
-
-
 
 
 def create_nn_model():
@@ -77,118 +75,121 @@ def create_nn_model():
 
     return Ylogits
 
-#weights and biases to be removed
-predictions  = create_nn_model()
 
-#calculates the difference between the predicion we got to the known labels we have
-#VAR renamed cross_entropy -> loss (could be  cost)
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(predictions, Y_))*100
+def Start(iterations = 100):
+    #weights and biases to be removed
+    predictions  = create_nn_model()
 
-#minimize the loss (the difference between prediciton and Y_)
-#piece of the computation graph that computes the gradient, applies the gradient to the weights and biases
-#to obtain new weights and biases
-#VAR renamed train_step -> optimizer
-optimizer = tf.train.AdamOptimizer(lr).minimize(loss)
+    #calculates the difference between the predicion we got to the known labels we have
+    #VAR renamed cross_entropy -> loss (could be  cost)
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(predictions, Y_))*100
 
-
-# initialize
-#sess = tf.Session()
+    #minimize the loss (the difference between prediciton and Y_)
+    #piece of the computation graph that computes the gradient, applies the gradient to the weights and biases
+    #to obtain new weights and biases
+    #VAR renamed train_step -> optimizer
+    optimizer = tf.train.AdamOptimizer(lr).minimize(loss)
 
 
-
-Y = tf.nn.softmax(predictions)
-
-# accuracy of the trained model, between 0 (worst) and 1 (best)
-correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    # initialize
+    #sess = tf.Session()
 
 
 
+    Y = tf.nn.softmax(predictions)
 
-# cicles of feedforward + backprop
-num_epochs = 2
-maxAcc=0
-batch_size = 100
-
-
-# # You can call this function in a loop to train the model, 100 images at a time
-# def training_step(i, update_test_data, update_train_data):
-#     # training on batches of 100 images with 100 labels
-#     batch_X, batch_Y = mnist.train.next_batch(100)
-#
-#     # learning rate decay
-#     max_learning_rate = 0.003
-#     min_learning_rate = 0.0001
-#     decay_speed =2000.
-#     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i/decay_speed)
-#     #print min_learning_rate, (max_learning_rate - min_learning_rate) , -i/decay_speed, math.exp(-i/decay_speed), learning_rate
-#
-#     # print train
-#     if update_train_data:
-#         a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
-#         print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
-#
-#
-#     # print test
-#     if update_test_data:
-#         a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
-#         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-#         #datavis.append_test_curves_data(i, a, c)
-#         #if (a > maxAcc):
-#         #    maxAcc = a
-#     # the backpropagation training step
-#     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
-
-
-iterations = 100#10001#100
-train_data_update_freq = 20
-test_data_update_freq=100
-one_test_at_start=True
-more_tests_at_start=False
-
-# learning rate decay
-max_learning_rate = 0.003
-min_learning_rate = 0.0001
-decay_speed = 2000.
-
-
-with tf.Session() as sess:
-    sess.run(tf.initialize_all_variables())
-
-    for i in range(int(iterations // train_data_update_freq + 1)): #500
-        # if (i == iterations // train_data_update_freq): #last iteration
-        #     training_step(iterations, True, True)
-        # else:
-        for k in range(train_data_update_freq):
-            n = i * train_data_update_freq + k
-            request_data_update = (n % train_data_update_freq == 0)
-            request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
-            if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
-
-
-
-            batch_X, batch_Y = mnist.train.next_batch(100)
-            learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i / decay_speed)
-
-            if request_data_update:
-                a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
-                print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
-
-            # print test
-            if request_test_data_update:
-                a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
-                print(str(i) + ": ********* epoch " + str(i * 100 // mnist.train.images.shape[0] + 1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-                # datavis.append_test_curves_data(i, a, c)
-                # if (a > maxAcc):
-                #    maxAcc = a
-
-            # the backpropagation training step
-            sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
+    # accuracy of the trained model, between 0 (worst) and 1 (best)
+    correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
 
 
+    # cicles of feedforward + backprop
+    num_epochs = 2
+    maxAcc=0
+    batch_size = 100
 
+
+    # # You can call this function in a loop to train the model, 100 images at a time
+    # def training_step(i, update_test_data, update_train_data):
+    #     # training on batches of 100 images with 100 labels
+    #     batch_X, batch_Y = mnist.train.next_batch(100)
+    #
+    #     # learning rate decay
+    #     max_learning_rate = 0.003
+    #     min_learning_rate = 0.0001
+    #     decay_speed =2000.
+    #     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i/decay_speed)
+    #     #print min_learning_rate, (max_learning_rate - min_learning_rate) , -i/decay_speed, math.exp(-i/decay_speed), learning_rate
+    #
+    #     # print train
+    #     if update_train_data:
+    #         a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
+    #         print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
+    #
+    #
+    #     # print test
+    #     if update_test_data:
+    #         a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
+    #         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
+    #         #datavis.append_test_curves_data(i, a, c)
+    #         #if (a > maxAcc):
+    #         #    maxAcc = a
+    #     # the backpropagation training step
+    #     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
+
+
+    #iterations = 100#10001#100
+    train_data_update_freq = 20
+    test_data_update_freq=100
+    one_test_at_start=True
+    more_tests_at_start=False
+
+    # learning rate decay
+    max_learning_rate = 0.003
+    min_learning_rate = 0.0001
+    decay_speed = 2000.
+
+
+    with tf.Session() as sess:
+        sess.run(tf.initialize_all_variables())
+
+        for i in range(int(iterations // train_data_update_freq + 1)): #500
+            # if (i == iterations // train_data_update_freq): #last iteration
+            #     training_step(iterations, True, True)
+            # else:
+            for k in range(train_data_update_freq):
+                n = i * train_data_update_freq + k
+                request_data_update = (n % train_data_update_freq == 0)
+                request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
+                if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
+
+
+
+                batch_X, batch_Y = mnist.train.next_batch(100)
+                learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-n / decay_speed)
+
+                if request_data_update:
+                    a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
+                    print(str(n) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
+
+                # print test
+                if request_test_data_update:
+                    a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
+                    print(str(n) + ": ********* epoch " + str(i * 100 // mnist.train.images.shape[0] + 1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
+                    # datavis.append_test_curves_data(i, a, c)
+                    # if (a > maxAcc):
+                    #    maxAcc = a
+
+                # the backpropagation training step
+                sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
+
+        #try to test one image?
+        #a, c = sess.run([accuracy, loss], {X: mnist.test.images[0], Y_: mnist.test.labels[0], pkeep: 1.0})
+
+LoadDataSet()
+Start(100)
 
 
 #print("max test accuracy: " + str(datavis.get_max_test_accuracy()))

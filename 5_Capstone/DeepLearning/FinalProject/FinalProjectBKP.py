@@ -140,7 +140,7 @@ def training_step(i, update_test_data, update_train_data):
     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
 
 
-iterations = 10001#100
+iterations = 100#10001
 train_data_update_freq = 20
 test_data_update_freq=100
 one_test_at_start=True

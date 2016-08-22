@@ -46,17 +46,17 @@ def create_nn_model():
     M = 24  # third convolutional layer
     N = 200  # fully connected layerVisualize
 
-    W1 = tf.Variable(tf.truncated_normal([6, 6, 1, K], stddev=0.1))  # 6x6 patch, 1 input channel, K output channels
-    B1 = tf.Variable(tf.constant(0.1, tf.float32, [K]))
-    W2 = tf.Variable(tf.truncated_normal([5, 5, K, L], stddev=0.1))
-    B2 = tf.Variable(tf.constant(0.1, tf.float32, [L]))
-    W3 = tf.Variable(tf.truncated_normal([4, 4, L, M], stddev=0.1))
-    B3 = tf.Variable(tf.constant(0.1, tf.float32, [M]))
+    W1 = tf.Variable(tf.truncated_normal([6, 6, 1, K], stddev=0.1), name="W1")  # 6x6 patch, 1 input channel, K output channels
+    B1 = tf.Variable(tf.constant(0.1, tf.float32, [K]), name="B1")
+    W2 = tf.Variable(tf.truncated_normal([5, 5, K, L], stddev=0.1), name="W2")
+    B2 = tf.Variable(tf.constant(0.1, tf.float32, [L]), name="B2")
+    W3 = tf.Variable(tf.truncated_normal([4, 4, L, M], stddev=0.1), name="W3")
+    B3 = tf.Variable(tf.constant(0.1, tf.float32, [M]), name="B3")
 
-    W4 = tf.Variable(tf.truncated_normal([7 * 7 * M, N], stddev=0.1))
-    B4 = tf.Variable(tf.constant(0.1, tf.float32, [N]))
-    W5 = tf.Variable(tf.truncated_normal([N, 10], stddev=0.1))
-    B5 = tf.Variable(tf.constant(0.1, tf.float32, [10]))
+    W4 = tf.Variable(tf.truncated_normal([7 * 7 * M, N], stddev=0.1), name="W4")
+    B4 = tf.Variable(tf.constant(0.1, tf.float32, [N]), name="B4")
+    W5 = tf.Variable(tf.truncated_normal([N, 10], stddev=0.1), name="W5")
+    B5 = tf.Variable(tf.constant(0.1, tf.float32, [10]), name="B5")
 
     # The model
     stride = 1  # output is 28x28
@@ -111,35 +111,6 @@ def Start(iterations = 100):
     batch_size = 100
 
 
-    # # You can call this function in a loop to train the model, 100 images at a time
-    # def training_step(i, update_test_data, update_train_data):
-    #     # training on batches of 100 images with 100 labels
-    #     batch_X, batch_Y = mnist.train.next_batch(100)
-    #
-    #     # learning rate decay
-    #     max_learning_rate = 0.003
-    #     min_learning_rate = 0.0001
-    #     decay_speed =2000.
-    #     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-i/decay_speed)
-    #     #print min_learning_rate, (max_learning_rate - min_learning_rate) , -i/decay_speed, math.exp(-i/decay_speed), learning_rate
-    #
-    #     # print train
-    #     if update_train_data:
-    #         a, c = sess.run([accuracy, loss], {X: batch_X, Y_: batch_Y, pkeep: 1.0})
-    #         print(str(i) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
-    #
-    #
-    #     # print test
-    #     if update_test_data:
-    #         a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
-    #         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-    #         #datavis.append_test_curves_data(i, a, c)
-    #         #if (a > maxAcc):
-    #         #    maxAcc = a
-    #     # the backpropagation training step
-    #     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
-
-
     #iterations = 100#10001#100
     train_data_update_freq = 20
     test_data_update_freq=100
@@ -151,9 +122,10 @@ def Start(iterations = 100):
     min_learning_rate = 0.0001
     decay_speed = 2000.
 
-
+    saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
+        print 'Variables:', ([v.op.name for v in tf.all_variables()])
 
         for i in range(int(iterations // train_data_update_freq + 1)): #500
             # if (i == iterations // train_data_update_freq): #last iteration
@@ -184,13 +156,25 @@ def Start(iterations = 100):
 
                 # the backpropagation training step
                 sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
+        saver.save(sess, 'myModel')
+
 
         #try to test one image?
         #a, c = sess.run([accuracy, loss], {X: mnist.test.images[0], Y_: mnist.test.labels[0], pkeep: 1.0})
 
 LoadDataSet()
-Start(100)
+Start(20)
 
+
+
+print '-----------------------------------'
+with tf.Graph().as_default() as g:
+    with tf.Session() as sess:
+        saver = tf.train.Saver()
+        # saver.restore(sess, 'myModel')
+        # # Initializing the variables
+        # print([v.op.name for v in tf.all_variables()])
+        # #print(sess.run(model.b)) #100
 
 #print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 

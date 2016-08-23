@@ -27,7 +27,6 @@ def LoadDataSet():
     global mnist
     mnist  = mnist_data.read_data_sets("mydata")
 
-
 # input X: 28x28 grayscale images, the first dimension (None) will index the images in the mini-batch
 X = tf.placeholder(tf.float32, [None, 28, 28, 1])
 # correct answers will go here
@@ -74,6 +73,7 @@ def create_nn_model():
     Ylogits = tf.matmul(YY4, W5) + B5
 
     return Ylogits
+
 
 
 def Start(iterations = 100):
@@ -150,27 +150,41 @@ def Start(iterations = 100):
                 if request_test_data_update:
                     a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
                     print(str(n) + ": ********* epoch " + str(i * 100 // mnist.train.images.shape[0] + 1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-                    # datavis.append_test_curves_data(i, a, c)
-                    # if (a > maxAcc):
-                    #    maxAcc = a
+                    #save checkpoint here if accuracy is up
+
 
                 # the backpropagation training step
                 sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
-        saver.save(sess, 'myModel')
+            ##print 'Saving Checkpoint'
+            saver.save(sess, 'checkpoints/myModel')
 
 
         #try to test one image?
         #a, c = sess.run([accuracy, loss], {X: mnist.test.images[0], Y_: mnist.test.labels[0], pkeep: 1.0})
 
-LoadDataSet()
-Start(20)
+#LoadDataSet()
+#Start(200)
 
 
 
-print '-----------------------------------'
-with tf.Graph().as_default() as g:
-    with tf.Session() as sess:
-        saver = tf.train.Saver()
+
+
+predictions = create_nn_model()
+
+
+with tf.Session() as sess:
+    sess.run(tf.initialize_all_variables())
+    print 'Variables:', ([v.op.name for v in tf.all_variables()])
+#     saver = tf.train.Saver()
+#     saver.restore(sess,'checkpoints/myModel')
+
+
+
+
+# print '-----------------------------------'
+# with tf.Graph().as_default() as g:
+#     with tf.Session() as sess:
+#         saver = tf.train.Saver()
         # saver.restore(sess, 'myModel')
         # # Initializing the variables
         # print([v.op.name for v in tf.all_variables()])

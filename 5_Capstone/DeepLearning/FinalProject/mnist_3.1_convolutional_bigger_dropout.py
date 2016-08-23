@@ -134,7 +134,7 @@ def training_step(i, update_test_data, update_train_data):
         #if (a > maxAcc):
         #    maxAcc = a
 
-    # the backpropagation training step
+    # the bacreturnkpropagation training step
     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
 
 

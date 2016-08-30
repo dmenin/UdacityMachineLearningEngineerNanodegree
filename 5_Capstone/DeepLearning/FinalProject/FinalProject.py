@@ -30,7 +30,6 @@ class DigitRecognition:
 
     def LoadDataSet(self):
         self.mnist  = mnist_data.read_data_sets("mydata")
-        self.foo = "aaaaa"
 
     def ResetModelVariables(self):
         tf.reset_default_graph()
@@ -40,16 +39,48 @@ class DigitRecognition:
 
 
     def getSaver(self):
+        prediction = self.Ylogits
+
         saver = tf.train.Saver()
         with tf.Session() as sess:
+            #sess.run(tf.initialize_all_variables())
             saver.restore(sess, 'checkpoints/myModel')
+
+            #num = randint(0, mnist.test.images.shape[0])
+            img = self.mnist.test.images[0]
+            y = tf.nn.softmax(self.Ylogits)
+
+            prediction = [tf.reduce_max(y), tf.argmax(y, 1)[0]]
+
+
+            #x = tf.placeholder("float", [None, 784])
+            #x = tf.placeholder("float", [None, 100])
+            #x = tf.placeholder(tf.float32, [1, 28, 28, 1])
+            x=tf.placeholder(tf.float32, [None, 28, 28, 1])
+
+
+            pred = sess.run(prediction, feed_dict={x: [img]})
+            #print pred
+
+
+
+
+            #classification = sess.run(tf.argmax(self.Ylogits, 1), feed_dict={x: [img]})
+
+
+
+
+
+            #sess.run(tf.argmax(prediction.eval(feed_dict={self.X: self.mnist.test.images}), 1))
+            #sess.run(prediction.eval(feed_dict={self.X: self.mnist.test.images}), 1)
+            #sess.run(  {self.X: self.mnist.test.images, self.pkeep: 1.0})
+
             #print sess.run(self.W1)
-            sess.run({self.X: self.mnist.test.images, self.pkeep: 1.0})
-        return saver
+            #sess.run({self.X: self.mnist.test.images, self.pkeep: 1.0})
+        #return saver
 
 
     def create_nn_model(self):
-        self.foo2 = "aaaaa"
         # input X: 28x28 grayscale images, the first dimension (None) will index the images in the mini-batch
         self.X = tf.placeholder(tf.float32, [None, 28, 28, 1])
         # correct answers will go here
@@ -69,6 +100,7 @@ class DigitRecognition:
 
         self.W1 = tf.Variable(tf.truncated_normal([6, 6, 1, K], stddev=0.1), name="W1")  # 6x6 patch, 1 input channel, K output channels
         self.B1 = tf.Variable(tf.constant(0.1, tf.float32, [K]), name="B1")
+
         self.W2 = tf.Variable(tf.truncated_normal([5, 5, K, L], stddev=0.1), name="W2")
         self.B2 = tf.Variable(tf.constant(0.1, tf.float32, [L]), name="B2")
         self.W3 = tf.Variable(tf.truncated_normal([4, 4, L, M], stddev=0.1), name="W3")
@@ -188,52 +220,57 @@ class DigitRecognition:
 
 
 
+d = DigitRecognition()
+d.LoadDataSet()
+d.create_nn_model()
+d.StartTraining(400)
 
 
-    # predictions = create_nn_model()
-    #
-    #
-    # with tf.Session() as sess:
-    #     sess.run(tf.initialize_all_variables())
-    #     print 'Variables:', ([v.op.name for v in tf.all_variables()])
-    #     saver = tf.train.Saver()
-    # #     saver.restore(sess,'checkpoints/myModel')
-
-
-
-
-    # print '-----------------------------------'
-    # with tf.Graph().as_default() as g:
-    #     with tf.Session() as sess:
-    #         saver = tf.train.Saver()
-            # saver.restore(sess, 'myModel')
-            # # Initializing the variables
-            # print([v.op.name for v in tf.all_variables()])
-            # #print(sess.run(model.b)) #100
-
-    #print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
-
-
-    # from datetime import datetime
-    # print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    #for i in range(10001):
-    #    training_step(i,20,100)
-
-    # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
-    # to disable the visualisation use the following line instead of the datavis.animate line
-    # for i in range(10000+1): training_step(i, i % 100 == 0, i % 20 == 0)
+#
+# dTest = DigitRecognition()
+# dTest.LoadDataSet()
+# dTest.create_nn_model()
+# saver = dTest.getSaver()
 
 
 
-# d = DigitRecognition()
-# d.LoadDataSet()
-# d.create_nn_model()
-# d.StartTraining(400)
 
 
 
-dTest = DigitRecognition()
-dTest.LoadDataSet()
-dTest.create_nn_model()
-saver = dTest.getSaver()
+
+
+
+# predictions = create_nn_model()
+#
+#
+# with tf.Session() as sess:
+#     sess.run(tf.initialize_all_variables())
+#     print 'Variables:', ([v.op.name for v in tf.all_variables()])
+#     saver = tf.train.Saver()
+# #     saver.restore(sess,'checkpoints/myModel')
+
+
+
+
+# print '-----------------------------------'
+# with tf.Graph().as_default() as g:
+#     with tf.Session() as sess:
+#         saver = tf.train.Saver()
+# saver.restore(sess, 'myModel')
+# # Initializing the variables
+# print([v.op.name for v in tf.all_variables()])
+# #print(sess.run(model.b)) #100
+
+# print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
+
+
+# from datetime import datetime
+# print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# for i in range(10001):
+#    training_step(i,20,100)
+
+# to save the animation as a movie, add save_movie=True as an argument to datavis.animate
+# to disable the visualisation use the following line instead of the datavis.animate line
+# for i in range(10000+1): training_step(i, i % 100 == 0, i % 20 == 0)
+

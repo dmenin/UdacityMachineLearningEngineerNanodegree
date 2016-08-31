@@ -4,6 +4,10 @@
 import mnist_data
 import tensorflow as tf
 import math
+import operator
+import numpy as np
+import cv2
+from scipy import ndimage
 
 tf.set_random_seed(0)
 # neural network structure for this sample:
@@ -38,46 +42,32 @@ class DigitRecognition:
         return [v.op.name for v in tf.all_variables()]
 
 
-    def getSaver(self):
-        prediction = self.Ylogits
-
+    def predict(self,i):
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            #sess.run(tf.initialize_all_variables())
             saver.restore(sess, 'checkpoints/myModel')
 
-            #num = randint(0, mnist.test.images.shape[0])
-            img = self.mnist.test.images[0]
-            y = tf.nn.softmax(self.Ylogits)
-
-            prediction = [tf.reduce_max(y), tf.argmax(y, 1)[0]]
-
-
-            #x = tf.placeholder("float", [None, 784])
-            #x = tf.placeholder("float", [None, 100])
-            #x = tf.placeholder(tf.float32, [1, 28, 28, 1])
-            x=tf.placeholder(tf.float32, [None, 28, 28, 1])
+            #img = self.mnist.test.images[0]
+            prediction = tf.argmax(self.Ylogits, 1)
+            best = sess.run([prediction], feed_dict={self.X: [self.mnist.test.images[i]], self.pkeep: 1.0})
+            return best
 
 
-            pred = sess.run(prediction, feed_dict={x: [img]})
-            #print pred
+    def predict2(self,image):
+        saver = tf.train.Saver()
+        with tf.Session() as sess:
+            saver.restore(sess, 'checkpoints/myModel')
 
+            #(28,28) to (28,28,1)
+            image = np.expand_dims(image, axis=2)
 
-
-
-            #classification = sess.run(tf.argmax(self.Ylogits, 1), feed_dict={x: [img]})
+            best = sess.run(self.Ylogits, feed_dict={self.X: [image], self.pkeep: 1.0})
+            # returns probability and value
+            index, value = max(enumerate(best[0]), key=operator.itemgetter(1))
+            return [value,index]
 
 
 
-
-
-            #sess.run(tf.argmax(prediction.eval(feed_dict={self.X: self.mnist.test.images}), 1))
-            #sess.run(prediction.eval(feed_dict={self.X: self.mnist.test.images}), 1)
-            #sess.run(  {self.X: self.mnist.test.images, self.pkeep: 1.0})
-
-            #print sess.run(self.W1)
-            #sess.run({self.X: self.mnist.test.images, self.pkeep: 1.0})
-        #return saver
 
 
     def create_nn_model(self):
@@ -166,7 +156,7 @@ class DigitRecognition:
 
         #iterations = 100#10001#100
         train_data_update_freq = 20
-        test_data_update_freq=100
+        test_data_update_freq=50
         one_test_at_start=True
         more_tests_at_start=False
 
@@ -204,73 +194,140 @@ class DigitRecognition:
                         a, c = sess.run([accuracy, loss], {self.X: self.mnist.test.images, self.Y_: self.mnist.test.labels, self.pkeep: 1.0})
                         print(str(n) + ": ********* epoch " + str(i * 100 // self.mnist.train.images.shape[0] + 1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
                         #save checkpoint here if accuracy is up
+                        if a > maxAcc:
+                            print 'Best Accuracy - Saving Checkpoint'
+                            maxAcc = a
+                            saver.save(sess, 'checkpoints/myModel')
+                        else:
+                            print 'No Accuracy Improvement'
 
 
                     # the backpropagation training step
                     sess.run(optimizer, {self.X: batch_X, self.Y_: batch_Y, self.lr: learning_rate, self.pkeep: 0.75})
-                ##print 'Saving Checkpoint'
-                saver.save(sess, 'checkpoints/myModel')
+
+    def getBestShift(self,img):
+        cy, cx = ndimage.measurements.center_of_mass(img)
+        print cy, cx
+
+        rows, cols = img.shape
+        shiftx = np.round(cols / 2.0 - cx).astype(int)
+        shifty = np.round(rows / 2.0 - cy).astype(int)
+
+        return shiftx, shifty
+
+    def shift(self, img, sx, sy):
+        rows, cols = img.shape
+        M = np.float32([[1, 0, sx], [0, 1, sy]])
+        shifted = cv2.warpAffine(img, M, (cols, rows))
+        return shifted
 
 
-            #try to test one image?
-            #a, c = sess.run([accuracy, loss], {X: mnist.test.images[0], Y_: mnist.test.labels[0], pkeep: 1.0})
-
-    # LoadDataSet()
-    # Start(20)
 
 
+    def testNewImage(self,image):
+        # Read image
+        originalImage = cv2.imread("test_images/" + image + ".png")
 
-d = DigitRecognition()
-d.LoadDataSet()
-d.create_nn_model()
-d.StartTraining(400)
+        # Read Image Black and White
+        originalImageBW = cv2.imread("test_images/" + image + ".png", 0)
+
+
+        _, originalImageBW = cv2.threshold(255 - originalImageBW, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        digit_image = -np.ones(originalImageBW.shape)
+        height, width = originalImageBW.shape
+
+
+        for cropped_width in range(100, 300, 20):
+            for cropped_height in range(100, 300, 20):
+                for shift_x in range(0, width - cropped_width, cropped_width / 4):
+                    for shift_y in range(0, height - cropped_height, cropped_height / 4):
+                        gray = originalImageBW[shift_y:shift_y + cropped_height, shift_x:shift_x + cropped_width]
+                        if np.count_nonzero(gray) <= 20:
+                            continue
+
+                        if (np.sum(gray[0]) != 0) or (np.sum(gray[:, 0]) != 0) or (np.sum(gray[-1]) != 0) or (np.sum(gray[:, -1]) != 0):
+                            continue
+
+                        top_left = np.array([shift_y, shift_x])
+                        bottom_right = np.array([shift_y + cropped_height, shift_x + cropped_width])
+
+                        while np.sum(gray[0]) == 0:
+                            top_left[0] += 1
+                            gray = gray[1:]
+
+                        while np.sum(gray[:, 0]) == 0:
+                            top_left[1] += 1
+                            gray = np.delete(gray, 0, 1)
+
+                        while np.sum(gray[-1]) == 0:
+                            bottom_right[0] -= 1
+                            gray = gray[:-1]
+
+                        while np.sum(gray[:, -1]) == 0:
+                            bottom_right[1] -= 1
+                            gray = np.delete(gray, -1, 1)
+
+                        actual_w_h = bottom_right - top_left
+                        if (np.count_nonzero(digit_image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]] + 1) >
+                                        0.2 * actual_w_h[0] * actual_w_h[1]):
+                            continue
+
+                        print "------------------"
+
+                        rows, cols = gray.shape
+                        compl_dif = abs(rows - cols)
+                        half_Sm = compl_dif / 2
+                        half_Big = half_Sm if half_Sm * 2 == compl_dif else half_Sm + 1
+                        if rows > cols:
+                            gray = np.lib.pad(gray, ((0, 0), (half_Sm, half_Big)), 'constant')
+                        else:
+                            gray = np.lib.pad(gray, ((half_Sm, half_Big), (0, 0)), 'constant')
+
+                        gray = cv2.resize(gray, (20, 20))
+                        gray = np.lib.pad(gray, ((4, 4), (4, 4)), 'constant')
+
+                        shiftx, shifty = self.getBestShift(gray)
+
+                        shifted = self.shift(gray, shiftx, shifty)
+                        gray = shifted #/ 255.0
+
+                        cv2.imwrite("test_images/" + image + "_" + str(shift_x) + "_" + str(shift_y) + ".png", shifted)
+
+                        print "Prediction for ", (shift_x, shift_y, cropped_width)
+                        # print "Pos"
+                        # print top_left
+                        # print bottom_right
+                        # print actual_w_h
+                        # print " "
+                        # print flatten
+
+                        pred = dTest.predict2(gray)
+                        print pred
+
+                        digit_image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]] = pred[1]
+
+                        cv2.rectangle(originalImage, tuple(top_left[::-1]), tuple(bottom_right[::-1]), color=(0, 255, 0),thickness=1)
+                        #cv2.circle (originalImage, center = tuple(top_left[::-1]), radius=100, color=(0, 255, 0),thickness=1 )
+
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        # value
+                        cv2.putText(originalImage, str(pred[1]), (top_left[1], bottom_right[0] + 40), font, fontScale=1.4,
+                                    color=(0, 255, 0), thickness=1)
+                        # percentage
+                        #cv2.putText(originalImage,format(pred[0]*100,".1f")+"%",(top_left[1]+30,bottom_right[0]+50), font,fontScale=0.4,color=(0,255,0),thickness=1)
+
+        cv2.imwrite("test_images/" + image + "_result.png", originalImage)
+
+
+
+# d = DigitRecognition()
+# d.LoadDataSet()
+# d.create_nn_model()
+# d.StartTraining(200)
 
 
 #
-# dTest = DigitRecognition()
-# dTest.LoadDataSet()
-# dTest.create_nn_model()
-# saver = dTest.getSaver()
-
-
-
-
-
-
-
-
-
-# predictions = create_nn_model()
-#
-#
-# with tf.Session() as sess:
-#     sess.run(tf.initialize_all_variables())
-#     print 'Variables:', ([v.op.name for v in tf.all_variables()])
-#     saver = tf.train.Saver()
-# #     saver.restore(sess,'checkpoints/myModel')
-
-
-
-
-# print '-----------------------------------'
-# with tf.Graph().as_default() as g:
-#     with tf.Session() as sess:
-#         saver = tf.train.Saver()
-# saver.restore(sess, 'myModel')
-# # Initializing the variables
-# print([v.op.name for v in tf.all_variables()])
-# #print(sess.run(model.b)) #100
-
-# print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
-
-
-# from datetime import datetime
-# print datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-# for i in range(10001):
-#    training_step(i,20,100)
-
-# to save the animation as a movie, add save_movie=True as an argument to datavis.animate
-# to disable the visualisation use the following line instead of the datavis.animate line
-# for i in range(10000+1): training_step(i, i % 100 == 0, i % 20 == 0)
-
+dTest = DigitRecognition()
+dTest.LoadDataSet()
+dTest.create_nn_model()
+dTest.testNewImage("five")

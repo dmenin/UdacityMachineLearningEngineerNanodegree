@@ -94,7 +94,7 @@ gray_complete = cv2.imread("img/" + image + ".png", 0)
 # better black and white version
 _, gray_complete = cv2.threshold(255-gray_complete, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
-cv2.imwrite("pro-img/compl.png", gray_complete)
+cv2.imwrite("img/compl.png", gray_complete)
 
 digit_image = -np.ones(gray_complete.shape)
 
@@ -159,7 +159,7 @@ for cropped_width in range(100, 300, 20):
                 shifted = shift(gray,shiftx,shifty)
                 gray = shifted
 
-                cv2.imwrite("pro-img/"+image+"_"+str(shift_x)+"_"+str(shift_y)+".png", gray)
+                cv2.imwrite("img/"+image+"_"+str(shift_x)+"_"+str(shift_y)+".png", gray)
 
                 """
                 all images in the training set have an range from 0-1

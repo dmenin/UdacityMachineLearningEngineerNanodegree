@@ -5,9 +5,14 @@ import mnist_data
 import tensorflow as tf
 import math
 import operator
-import numpy as np
 import cv2
 from scipy import ndimage
+import math
+import os
+import struct
+from matplotlib import pyplot as plt
+import numpy as np
+import pylab
 
 tf.set_random_seed(0)
 # neural network structure for this sample:
@@ -40,6 +45,33 @@ class DigitRecognition:
 
     def DisplayModelVariables(self):
         return [v.op.name for v in tf.all_variables()]
+
+
+
+    def showTopXImageFromTestSet(self, amt):
+        if amt > 30:
+            amt = 30
+
+        fig = plt.figure(figsize=(10, 10))
+        for i in range(amt):
+            sp = fig.add_subplot(6, 5, i + 1) #6 rows by 5 columns grid
+            #get the correct label
+            l = [j for j, x in enumerate(self.mnist.test.labels[i]) if x][0]
+            sp.set_title(l)
+            plt.axis('off')
+            image = np.array(self.mnist.test.images[i]).reshape(28, 28)
+            plt.imshow(image, interpolation='none', cmap=pylab.gray(), label=l)
+        plt.show()
+
+
+
+    def showSingleImageFromTestSet(self, i):
+        image = self.mnist.test.images[i]
+        image = np.array(image).reshape(28, 28)
+        plt.imshow(image, interpolation='none', cmap=pylab.gray())
+        plt.axis('off')
+        plt.show()
+
 
 
     def predict(self,i):
@@ -121,12 +153,8 @@ class DigitRecognition:
 
 
 
-    def StartTraining(self, iterations = 100):
-        #weights and biases to be removed
-
+    def StartTraining(self, NumIterations = 100):
         predictions  =  self.Ylogits# create_nn_model()
-
-
 
         #calculates the difference between the predicion we got to the known labels we have
         #VAR renamed cross_entropy -> loss (could be  cost)
@@ -135,9 +163,7 @@ class DigitRecognition:
         #minimize the loss (the difference between prediciton and Y_)
         #piece of the computation graph that computes the gradient, applies the gradient to the weights and biases
         #to obtain new weights and biases
-        #VAR renamed train_step -> optimizer
         optimizer = tf.train.AdamOptimizer(self.lr).minimize(loss)
-
 
         Y = tf.nn.softmax(predictions)
 
@@ -145,20 +171,12 @@ class DigitRecognition:
         correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(self.Y_, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-
-
-
-        # cicles of feedforward + backprop
-        num_epochs = 2
         maxAcc=0
-        batch_size = 100
 
-
-        #iterations = 100#10001#100
-        train_data_update_freq = 20
-        test_data_update_freq=50
+        #iterations = 1000
+        NBatches_CheckTrain = 20
+        NBatches_CheckTest=100
         one_test_at_start=True
-        more_tests_at_start=False
 
         # learning rate decay
         max_learning_rate = 0.003
@@ -166,44 +184,44 @@ class DigitRecognition:
         decay_speed = 2000.
 
         saver = tf.train.Saver()
+        print ""
+        print "Starting Training"
         with tf.Session() as sess:
             sess.run(tf.initialize_all_variables())
-            print 'Variables:', ([v.op.name for v in tf.all_variables()])
 
-            for i in range(int(iterations // train_data_update_freq + 1)): #500
-                # if (i == iterations // train_data_update_freq): #last iteration
-                #     training_step(iterations, True, True)
-                # else:
-                for k in range(train_data_update_freq):
-                    n = i * train_data_update_freq + k
-                    request_data_update = (n % train_data_update_freq == 0)
-                    request_test_data_update = (n % test_data_update_freq == 0) and (n > 0 or one_test_at_start)
-                    if more_tests_at_start and n < test_data_update_freq: request_test_data_update = request_data_update
+            #Big Loop
+            for i in range(int(NumIterations // NBatches_CheckTrain + 1)): #1000/20 -> 0 to 50 Loops
 
+                for k in range(NBatches_CheckTrain):#1 to 19
+                    n = i * NBatches_CheckTrain + k # Big Batch * 20 * i -> 0 to 100,200, 300 and so on
 
-
+                    #Train:
                     batch_X, batch_Y = self.mnist.train.next_batch(100)
+
+                    #Learning Rate Decay:
                     learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-n / decay_speed)
 
-                    if request_data_update:
+                    #Check Accuray and Loss on the training data
+                    if (n % NBatches_CheckTrain == 0):
                         a, c = sess.run([accuracy, loss], {self.X: batch_X, self.Y_: batch_Y, self.pkeep: 1.0})
-                        print(str(n) + ": accuracy:" + str(a) + " loss: " + str(c) + " (lr:" + str(learning_rate) + ")")
+                        print "    Train Iteration "+str(n) + " (Lerning Rate:" + str(learning_rate) + ")" + ": accuracy:" + str(a) + " loss: " + str(c)
 
-                    # print test
-                    if request_test_data_update:
+                    # Check Accuray and Loss on the testing data
+                    if (n % NBatches_CheckTest == 0) and (n > 0):
                         a, c = sess.run([accuracy, loss], {self.X: self.mnist.test.images, self.Y_: self.mnist.test.labels, self.pkeep: 1.0})
-                        print(str(n) + ": ********* epoch " + str(i * 100 // self.mnist.train.images.shape[0] + 1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
-                        #save checkpoint here if accuracy is up
+                        #Save checkpoint if accuracy is up
                         if a > maxAcc:
-                            print 'Best Accuracy - Saving Checkpoint'
+                            message =  'Accuracy Improvement - Saving Checkpoint'
                             maxAcc = a
                             saver.save(sess, 'checkpoints/myModel')
                         else:
-                            print 'No Accuracy Improvement'
+                            message = 'No Accuracy Improvement'
 
+                        print "Test Results: EPOCH", str(n * 100 // self.mnist.train.images.shape[0] + 1) , "- Iteration:", str(n), "Accuracy:" + str(a) + " Test Loss: " + str(c)," - ", message
 
                     # the backpropagation training step
                     sess.run(optimizer, {self.X: batch_X, self.Y_: batch_Y, self.lr: learning_rate, self.pkeep: 0.75})
+
 
     def getBestShift(self,img):
         cy, cx = ndimage.measurements.center_of_mass(img)
@@ -222,8 +240,6 @@ class DigitRecognition:
         return shifted
 
 
-
-
     def testNewImage(self,image):
         # Read image
         originalImage = cv2.imread("test_images/" + image + ".png")
@@ -231,11 +247,18 @@ class DigitRecognition:
         # Read Image Black and White
         originalImageBW = cv2.imread("test_images/" + image + ".png", 0)
 
+        #crate a folder with the image_name or clean it if already exists
+        folder = "test_images/"+image+"_result/"
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        else:
+            map(os.unlink, [os.path.join(folder, f) for f in os.listdir(folder)])
+
+
 
         _, originalImageBW = cv2.threshold(255 - originalImageBW, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         digit_image = -np.ones(originalImageBW.shape)
         height, width = originalImageBW.shape
-
 
         for cropped_width in range(100, 300, 20):
             for cropped_height in range(100, 300, 20):
@@ -272,7 +295,7 @@ class DigitRecognition:
                                         0.2 * actual_w_h[0] * actual_w_h[1]):
                             continue
 
-                        print "------------------"
+
 
                         rows, cols = gray.shape
                         compl_dif = abs(rows - cols)
@@ -291,43 +314,50 @@ class DigitRecognition:
                         shifted = self.shift(gray, shiftx, shifty)
                         gray = shifted #/ 255.0
 
-                        cv2.imwrite("test_images/" + image + "_" + str(shift_x) + "_" + str(shift_y) + ".png", shifted)
+                        cv2.imwrite(folder + image + "_" + str(shift_x) + "_" + str(shift_y) + ".png", shifted)
 
                         print "Prediction for ", (shift_x, shift_y, cropped_width)
-                        # print "Pos"
-                        # print top_left
-                        # print bottom_right
-                        # print actual_w_h
-                        # print " "
-                        # print flatten
-
-                        pred = dTest.predict2(gray)
+                        pred = self.predict2(gray)
                         print pred
 
                         digit_image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]] = pred[1]
 
-                        cv2.rectangle(originalImage, tuple(top_left[::-1]), tuple(bottom_right[::-1]), color=(0, 255, 0),thickness=1)
-                        #cv2.circle (originalImage, center = tuple(top_left[::-1]), radius=100, color=(0, 255, 0),thickness=1 )
+
+
+                        #use pythagoras to get the center of the rectangle (radius of the circle)
+                        c = int(math.sqrt((bottom_right[::-1][0] - top_left[::-1][0]) ** 2 + (bottom_right[::-1][1] - top_left[::-1][1]) ** 2) / 2)
+                        xCenter = (top_left[::-1][0] + bottom_right[::-1][0]) / 2
+                        yCenter = (top_left[::-1][1] + bottom_right[::-1][1]) / 2
+                        cv2.circle(originalImage, center=tuple([xCenter, yCenter]), radius=c, color=(0, 255, 0), thickness=2)
+                        #this circle may work better if the images are more like rectalngles:
+                        #cv2.circle (originalImage, center = tuple(top_left[::-1] + c), radius=c, color=(0, 255, 0),thickness=1 )
+                        #or an actual rectangle:
+                        #cv2.rectangle(originalImage, tuple(top_left[::-1]), tuple(bottom_right[::-1]), color=(0, 255, 0),thickness=1)
 
                         font = cv2.FONT_HERSHEY_SIMPLEX
                         # value
-                        cv2.putText(originalImage, str(pred[1]), (top_left[1], bottom_right[0] + 40), font, fontScale=1.4,
-                                    color=(0, 255, 0), thickness=1)
+                        cv2.putText(originalImage, str(pred[1]), (top_left[1], bottom_right[0] + 40), font, fontScale=1.2, color=(0, 255, 0), thickness=1)
                         # percentage
                         #cv2.putText(originalImage,format(pred[0]*100,".1f")+"%",(top_left[1]+30,bottom_right[0]+50), font,fontScale=0.4,color=(0,255,0),thickness=1)
 
-        cv2.imwrite("test_images/" + image + "_result.png", originalImage)
+        cv2.imwrite(folder + image + "_result.png", originalImage)
 
 
+# #DATA EXPLORATION
+# d = DigitRecognition()
+# d.LoadDataSet()
+# d.showSingleImageFromTestSet(30)
+# d.showTopXImageFromTestSet(30)
 
+#Training
 # d = DigitRecognition()
 # d.LoadDataSet()
 # d.create_nn_model()
-# d.StartTraining(200)
+# d.StartTraining(700)
 
 
-#
 dTest = DigitRecognition()
 dTest.LoadDataSet()
 dTest.create_nn_model()
-dTest.testNewImage("five")
+dTest.testNewImage("hand1")
+

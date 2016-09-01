@@ -132,6 +132,7 @@ def training_step(i, update_test_data, update_train_data):
     # print test
     if update_test_data:
         a, c = sess.run([accuracy, loss], {X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})
+        print i
         print(str(i) + ": ********* epoch " + str(i*100//mnist.train.images.shape[0]+1) + " ********* test accuracy:" + str(a) + " test loss: " + str(c))
         #datavis.append_test_curves_data(i, a, c)
         #if (a > maxAcc):
@@ -140,7 +141,7 @@ def training_step(i, update_test_data, update_train_data):
     sess.run(optimizer, {X: batch_X, Y_: batch_Y, lr: learning_rate, pkeep: 0.75})
 
 
-iterations = 100#10001
+iterations = 700#10001
 train_data_update_freq = 20
 test_data_update_freq=100
 one_test_at_start=True

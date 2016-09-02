@@ -72,9 +72,26 @@ class DigitRecognition:
         plt.axis('off')
         plt.show()
 
+    def getTrainingDataDistribution(self):
+        #this can be drastically imrpoved, but since its such a small dataset, it runs pretty fast
+        num_dict = {}
+        for k in range(len(self.mnist.train.labels)):
+            val = [i for i, e in enumerate(self.mnist.train.labels[k]) if e != 0][0]
+            if val in num_dict:
+                num_dict[val] += 1
+            else:
+                num_dict[val] = 1
+
+        plt.bar(num_dict.keys(), num_dict.values(), 0.5, color='g')
+        plt.show()
+        plt.axis([-1, 10, 0, 8000])
+        plt.xticks(range(10))
+        plt.xlabel('Class')
+        plt.ylabel('Number of Samples')
+        plt.title('Training Set Distribution')
 
 
-    def predict(self,i):
+    def predictFromTestSet(self,i):
         saver = tf.train.Saver()
         with tf.Session() as sess:
             saver.restore(sess, 'checkpoints/myModel')
@@ -82,7 +99,7 @@ class DigitRecognition:
             #img = self.mnist.test.images[0]
             prediction = tf.argmax(self.Ylogits, 1)
             best = sess.run([prediction], feed_dict={self.X: [self.mnist.test.images[i]], self.pkeep: 1.0})
-            return best
+            return best[0][0]
 
 
     def predict2(self,image):
@@ -100,6 +117,15 @@ class DigitRecognition:
 
 
 
+    def create_simple_model(self):
+        self.lr = tf.placeholder(tf.float32)
+        self.pkeep = tf.placeholder(tf.float32)
+        self.X = tf.placeholder(tf.float32, [None, 28, 28, 1])
+        self.Y_ = tf.placeholder(tf.float32, [None, 10])
+        W = tf.Variable(tf.zeros([784, 10]))
+        b = tf.Variable(tf.zeros([10]))
+        XX = tf.reshape(self.X, [-1, 784])
+        self.Ylogits = tf.matmul(XX, W) + b
 
 
     def create_nn_model(self):
@@ -148,16 +174,12 @@ class DigitRecognition:
         YY4 = tf.nn.dropout(Y4, self.pkeep)
         self.Ylogits = tf.matmul(YY4, self.W5) + self.B5
 
-        #dont need to
-        #return Ylogits
-
 
 
     def StartTraining(self, NumIterations = 100):
         predictions  =  self.Ylogits# create_nn_model()
 
         #calculates the difference between the predicion we got to the known labels we have
-        #VAR renamed cross_entropy -> loss (could be  cost)
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(predictions, self.Y_))*100
 
         #minimize the loss (the difference between prediciton and Y_)
@@ -221,6 +243,8 @@ class DigitRecognition:
 
                     # the backpropagation training step
                     sess.run(optimizer, {self.X: batch_X, self.Y_: batch_Y, self.lr: learning_rate, self.pkeep: 0.75})
+
+        print "Training complete, max accuracy achieved:", str(maxAcc)
 
 
     def getBestShift(self,img):
@@ -343,21 +367,20 @@ class DigitRecognition:
         cv2.imwrite(folder + image + "_result.png", originalImage)
 
 
-# #DATA EXPLORATION
+# 1)DATA EXPLORATION
 # d = DigitRecognition()
 # d.LoadDataSet()
 # d.showSingleImageFromTestSet(30)
 # d.showTopXImageFromTestSet(30)
 
-#Training
+# 2) TRAINING
 # d = DigitRecognition()
 # d.LoadDataSet()
 # d.create_nn_model()
-# d.StartTraining(700)
+# d.StartTraining(2000)
 
-
-dTest = DigitRecognition()
-dTest.LoadDataSet()
-dTest.create_nn_model()
-dTest.testNewImage("hand1")
-
+#3)TESTING
+# dTest = DigitRecognition()
+# dTest.LoadDataSet()
+# dTest.create_nn_model()
+# dTest.testNewImage("five")

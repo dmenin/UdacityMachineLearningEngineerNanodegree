@@ -3,7 +3,6 @@
 
 import mnist_data
 import tensorflow as tf
-import math
 import operator
 import cv2
 from scipy import ndimage
@@ -15,20 +14,6 @@ import numpy as np
 import pylab
 
 tf.set_random_seed(0)
-# neural network structure for this sample:
-#
-# · · · · · · · · · ·      (input data, 1-deep)                 X [batch, 28, 28, 1]
-# @ @ @ @ @ @ @ @ @ @   -- conv. layer 6x6x1=>6 stride 1        W1 [5, 5, 1, 6]        B1 [6]
-# ∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶                                           Y1 [batch, 28, 28, 6]
-#   @ @ @ @ @ @ @ @     -- conv. layer 5x5x6=>12 stride 2       W2 [5, 5, 6, 12]        B2 [12]
-#   ∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶                                             Y2 [batch, 14, 14, 12]
-#     @ @ @ @ @ @       -- conv. layer 4x4x12=>24 stride 2      W3 [4, 4, 12, 24]       B3 [24]
-#     ∶∶∶∶∶∶∶∶∶∶∶                                               Y3 [batch, 7, 7, 24] => reshaped to YY [batch, 7*7*24]
-#      \x/x\x\x/ ✞      -- fully connected layer (relu+dropout) W4 [7*7*24, 200]       B4 [200]
-#       · · · ·                                                 Y4 [batch, 200]
-#       \x/x\x/         -- fully connected layer (softmax)      W5 [200, 10]           B5 [10]
-#        · · ·                                                  Y [batch, 20]
-
 
 class DigitRecognition:
 
@@ -102,7 +87,7 @@ class DigitRecognition:
             return best[0][0]
 
 
-    def predict2(self,image):
+    def predictImage(self,image):
         saver = tf.train.Saver()
         with tf.Session() as sess:
             saver.restore(sess, 'checkpoints/myModel')
@@ -114,8 +99,6 @@ class DigitRecognition:
             # returns probability and value
             index, value = max(enumerate(best[0]), key=operator.itemgetter(1))
             return [value,index]
-
-
 
     def create_simple_model(self):
         self.lr = tf.placeholder(tf.float32)
@@ -131,9 +114,10 @@ class DigitRecognition:
     def create_nn_model(self):
         # input X: 28x28 grayscale images, the first dimension (None) will index the images in the mini-batch
         self.X = tf.placeholder(tf.float32, [None, 28, 28, 1])
-        # correct answers will go here
+        # Correct answers
         self.Y_ = tf.placeholder(tf.float32, [None, 10])
-        # variable learning rate
+
+        #Learning rate
         self.lr = tf.placeholder(tf.float32)
         # Probability of keeping a node during dropout = 1.0 at test time (no dropout) and 0.75 at training time
         self.pkeep = tf.placeholder(tf.float32)
@@ -146,33 +130,34 @@ class DigitRecognition:
         M = 24  # third convolutional layer
         N = 200  # fully connected layerVisualize
 
-        self.W1 = tf.Variable(tf.truncated_normal([6, 6, 1, K], stddev=0.1), name="W1")  # 6x6 patch, 1 input channel, K output channels
-        self.B1 = tf.Variable(tf.constant(0.1, tf.float32, [K]), name="B1")
+        self.WeightsLayer1 = tf.Variable(tf.truncated_normal([6, 6, 1, K], stddev=0.1), name="W1")  # 6x6 patch, 1 input channel, K output channels
+        self.BiasLayer1 = tf.Variable(tf.constant(0.1, tf.float32, [K]), name="B1")
 
-        self.W2 = tf.Variable(tf.truncated_normal([5, 5, K, L], stddev=0.1), name="W2")
-        self.B2 = tf.Variable(tf.constant(0.1, tf.float32, [L]), name="B2")
-        self.W3 = tf.Variable(tf.truncated_normal([4, 4, L, M], stddev=0.1), name="W3")
-        self.B3 = tf.Variable(tf.constant(0.1, tf.float32, [M]), name="B3")
+        self.WeightsLayer2 = tf.Variable(tf.truncated_normal([5, 5, K, L], stddev=0.1), name="W2")
+        self.Biaslayer2 = tf.Variable(tf.constant(0.1, tf.float32, [L]), name="B2")
 
-        self.W4 = tf.Variable(tf.truncated_normal([7 * 7 * M, N], stddev=0.1), name="W4")
-        self.B4 = tf.Variable(tf.constant(0.1, tf.float32, [N]), name="B4")
-        self.W5 = tf.Variable(tf.truncated_normal([N, 10], stddev=0.1), name="W5")
-        self.B5 = tf.Variable(tf.constant(0.1, tf.float32, [10]), name="B5")
+        self.WeightsLayer3 = tf.Variable(tf.truncated_normal([4, 4, L, M], stddev=0.1), name="W3")
+        self.BiasLayer3 = tf.Variable(tf.constant(0.1, tf.float32, [M]), name="B3")
+
+        self.WeightsLayer4 = tf.Variable(tf.truncated_normal([7 * 7 * M, N], stddev=0.1), name="W4")
+        self.BiasLayer4 = tf.Variable(tf.constant(0.1, tf.float32, [N]), name="B4")
+        self.WeightsLayer5 = tf.Variable(tf.truncated_normal([N, 10], stddev=0.1), name="W5")
+        self.BiasLayer5 = tf.Variable(tf.constant(0.1, tf.float32, [10]), name="B5")
 
         # The model
         stride = 1  # output is 28x28
-        Y1 = tf.nn.relu(tf.nn.conv2d(self.X, self.W1, strides=[1, stride, stride, 1], padding='SAME') + self.B1)
+        Y1 = tf.nn.relu(tf.nn.conv2d(self.X, self.WeightsLayer1, strides=[1, stride, stride, 1], padding='SAME') + self.BiasLayer1)
         stride = 2  # output is 14x14
-        Y2 = tf.nn.relu(tf.nn.conv2d(Y1, self.W2, strides=[1, stride, stride, 1], padding='SAME') + self.B2)
+        Y2 = tf.nn.relu(tf.nn.conv2d(Y1, self.WeightsLayer2, strides=[1, stride, stride, 1], padding='SAME') + self.Biaslayer2)
         stride = 2  # output is 7x7
-        Y3 = tf.nn.relu(tf.nn.conv2d(Y2, self.W3, strides=[1, stride, stride, 1], padding='SAME') + self.B3)
+        Y3 = tf.nn.relu(tf.nn.conv2d(Y2, self.WeightsLayer3, strides=[1, stride, stride, 1], padding='SAME') + self.BiasLayer3)
 
         # reshape the output from the third convolution for the fully connected layer
         YY = tf.reshape(Y3, shape=[-1, 7 * 7 * M])
 
-        Y4 = tf.nn.relu(tf.matmul(YY, self.W4) + self.B4)
+        Y4 = tf.nn.relu(tf.matmul(YY, self.WeightsLayer4) + self.BiasLayer4)
         YY4 = tf.nn.dropout(Y4, self.pkeep)
-        self.Ylogits = tf.matmul(YY4, self.W5) + self.B5
+        self.Ylogits = tf.matmul(YY4, self.WeightsLayer5) + self.BiasLayer5
 
 
 
@@ -226,7 +211,7 @@ class DigitRecognition:
                     #Check Accuray and Loss on the training data
                     if (n % NBatches_CheckTrain == 0):
                         a, c = sess.run([accuracy, loss], {self.X: batch_X, self.Y_: batch_Y, self.pkeep: 1.0})
-                        print "    Train Iteration "+str(n) + " (Lerning Rate:" + str(learning_rate) + ")" + ": accuracy:" + str(a) + " loss: " + str(c)
+                        print "    Train Iteration "+str(n) + " (Learning Rate:" + str(learning_rate) + ")" + ": accuracy:" + str(a) + " loss: " + str(c)
 
                     # Check Accuray and Loss on the testing data
                     if (n % NBatches_CheckTest == 0) and (n > 0):
@@ -271,7 +256,7 @@ class DigitRecognition:
         # Read Image Black and White
         originalImageBW = cv2.imread("test_images/" + image + ".png", 0)
 
-        #crate a folder with the image_name or clean it if already exists
+        #create a folder with the image_name or clean it if already exists
         folder = "test_images/"+image+"_result/"
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -288,71 +273,68 @@ class DigitRecognition:
             for cropped_height in range(100, 300, 20):
                 for shift_x in range(0, width - cropped_width, cropped_width / 4):
                     for shift_y in range(0, height - cropped_height, cropped_height / 4):
-                        gray = originalImageBW[shift_y:shift_y + cropped_height, shift_x:shift_x + cropped_width]
-                        if np.count_nonzero(gray) <= 20:
+                        predImage = originalImageBW[shift_y:shift_y + cropped_height, shift_x:shift_x + cropped_width]
+                        if np.count_nonzero(predImage) <= 20:
                             continue
 
-                        if (np.sum(gray[0]) != 0) or (np.sum(gray[:, 0]) != 0) or (np.sum(gray[-1]) != 0) or (np.sum(gray[:, -1]) != 0):
+                        if (np.sum(predImage[0]) != 0) or (np.sum(predImage[:, 0]) != 0) or (np.sum(predImage[-1]) != 0) or (np.sum(predImage[:, -1]) != 0):
                             continue
 
                         top_left = np.array([shift_y, shift_x])
                         bottom_right = np.array([shift_y + cropped_height, shift_x + cropped_width])
 
-                        while np.sum(gray[0]) == 0:
+                        while np.sum(predImage[0]) == 0:
                             top_left[0] += 1
-                            gray = gray[1:]
+                            predImage = predImage[1:]
 
-                        while np.sum(gray[:, 0]) == 0:
+                        while np.sum(predImage[:, 0]) == 0:
                             top_left[1] += 1
-                            gray = np.delete(gray, 0, 1)
+                            predImage = np.delete(predImage, 0, 1)
 
-                        while np.sum(gray[-1]) == 0:
+                        while np.sum(predImage[-1]) == 0:
                             bottom_right[0] -= 1
-                            gray = gray[:-1]
+                            predImage = predImage[:-1]
 
-                        while np.sum(gray[:, -1]) == 0:
+                        while np.sum(predImage[:, -1]) == 0:
                             bottom_right[1] -= 1
-                            gray = np.delete(gray, -1, 1)
+                            predImage = np.delete(predImage, -1, 1)
 
                         actual_w_h = bottom_right - top_left
-                        if (np.count_nonzero(digit_image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]] + 1) >
-                                        0.2 * actual_w_h[0] * actual_w_h[1]):
+                        if (np.count_nonzero(digit_image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]] + 1) > 0.2 * actual_w_h[0] * actual_w_h[1]):
                             continue
 
-
-
-                        rows, cols = gray.shape
+                        rows, cols = predImage.shape
                         compl_dif = abs(rows - cols)
                         half_Sm = compl_dif / 2
                         half_Big = half_Sm if half_Sm * 2 == compl_dif else half_Sm + 1
                         if rows > cols:
-                            gray = np.lib.pad(gray, ((0, 0), (half_Sm, half_Big)), 'constant')
+                            predImage = np.lib.pad(predImage, ((0, 0), (half_Sm, half_Big)), 'constant')
                         else:
-                            gray = np.lib.pad(gray, ((half_Sm, half_Big), (0, 0)), 'constant')
+                            predImage = np.lib.pad(predImage, ((half_Sm, half_Big), (0, 0)), 'constant')
 
-                        gray = cv2.resize(gray, (20, 20))
-                        gray = np.lib.pad(gray, ((4, 4), (4, 4)), 'constant')
+                        predImage = cv2.resize(predImage, (20, 20))
+                        predImage = np.lib.pad(predImage, ((4, 4), (4, 4)), 'constant')
 
-                        shiftx, shifty = self.getBestShift(gray)
+                        shiftx, shifty = self.getBestShift(predImage)
 
-                        shifted = self.shift(gray, shiftx, shifty)
-                        gray = shifted #/ 255.0
+                        shifted = self.shift(predImage, shiftx, shifty)
+                        predImage = shifted #/ 255.0
 
                         cv2.imwrite(folder + image + "_" + str(shift_x) + "_" + str(shift_y) + ".png", shifted)
 
                         print "Prediction for ", (shift_x, shift_y, cropped_width)
-                        pred = self.predict2(gray)
+                        pred = self.predictImage(predImage)
                         print pred
 
                         digit_image[top_left[0]:bottom_right[0], top_left[1]:bottom_right[1]] = pred[1]
 
 
 
-                        #use pythagoras to get the center of the rectangle (radius of the circle)
+                        #use pythagoras to get the center of the rectangle (actually ended up treating the images as squares, but this seems to work fine to get the center of the square
                         c = int(math.sqrt((bottom_right[::-1][0] - top_left[::-1][0]) ** 2 + (bottom_right[::-1][1] - top_left[::-1][1]) ** 2) / 2)
                         xCenter = (top_left[::-1][0] + bottom_right[::-1][0]) / 2
                         yCenter = (top_left[::-1][1] + bottom_right[::-1][1]) / 2
-                        cv2.circle(originalImage, center=tuple([xCenter, yCenter]), radius=c, color=(0, 255, 0), thickness=2)
+                        cv2.circle(originalImage, center=tuple([xCenter, yCenter]), radius=c+5, color=(0, 255, 0), thickness=2)
                         #this circle may work better if the images are more like rectalngles:
                         #cv2.circle (originalImage, center = tuple(top_left[::-1] + c), radius=c, color=(0, 255, 0),thickness=1 )
                         #or an actual rectangle:
@@ -361,8 +343,7 @@ class DigitRecognition:
                         font = cv2.FONT_HERSHEY_SIMPLEX
                         # value
                         cv2.putText(originalImage, str(pred[1]), (top_left[1], bottom_right[0] + 40), font, fontScale=1.2, color=(0, 255, 0), thickness=1)
-                        # percentage
-                        #cv2.putText(originalImage,format(pred[0]*100,".1f")+"%",(top_left[1]+30,bottom_right[0]+50), font,fontScale=0.4,color=(0,255,0),thickness=1)
+
 
         cv2.imwrite(folder + image + "_result.png", originalImage)
 
@@ -373,14 +354,13 @@ class DigitRecognition:
 # d.showSingleImageFromTestSet(30)
 # d.showTopXImageFromTestSet(30)
 
-# 2) TRAINING
+#2) TRAINING
 # d = DigitRecognition()
 # d.LoadDataSet()
 # d.create_nn_model()
-# d.StartTraining(2000)
+# d.StartTraining(100)
 
-#3)TESTING
+# 3)TESTING
 # dTest = DigitRecognition()
-# dTest.LoadDataSet()
 # dTest.create_nn_model()
-# dTest.testNewImage("five")
+# dTest.testNewImage("paint3")

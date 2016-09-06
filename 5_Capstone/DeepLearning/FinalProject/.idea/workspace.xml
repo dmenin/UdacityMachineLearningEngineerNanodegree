@@ -2,17 +2,80 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c6d489c4-d752-4aa9-917b-8c1c8c1746c0" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/DataExploration-checkpoint.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/DataExplorationOld-checkpoint.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/FinalProjectTest-checkpoint.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/FinalProjectTrain-checkpoint.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DataExploration.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DataExplorationOld.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProjectTest.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProjectTrain.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint3_result/paint3_result.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/3_ModelTesting1-checkpoint.ipynb" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Untitled-checkpoint.ipynb" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/3_ModelTesting1.ipynb" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProject2.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProject3.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProjectAux.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProjectBKP.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/FinalProjectBKP2.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Untitled.ipynb" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/deepnet.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/input_data.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/mnist_3.1_convolutional_bigger_dropout.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/myDeepNet.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/original.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tensorflowvisu.mplstyle" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tensorflowvisu.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tensorflowvisu_digits.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/five_result/five_25_50.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/five_result/five_result.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo2.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3_result/foo3_125_275.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3_result/foo3_225_140.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3_result/foo3_225_175.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3_result/foo3_250_175.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3_result/foo3_25_275.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/foo3_result/foo3_result.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_0_325.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_100_325.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_125_125.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_125_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_175_225.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_200_325.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_225_125.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_225_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_25_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_300_125.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_300_325.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_325_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_375_150.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_400_325.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_425_200.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_425_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_500_125.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_500_225.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_500_300.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_50_180.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_525_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_575_300.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/hand1_result/hand1_600_0.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_0_0.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_120_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_125_120.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_175_175.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_225_0.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_225_100.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_25_140.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_275_200.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_325_0.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_375_0.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_375_200.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_400_100.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_475_0.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_480_200.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_550_100.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_550_200.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_550_25.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_images/paint4_result/paint4_result.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/checkpoints/myModel" afterPath="$PROJECT_DIR$/checkpoints/myModel" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test_images/paint4.png" afterPath="$PROJECT_DIR$/test_images/paint4.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/2_ModelTraining-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/2_ModelTraining-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2_ModelTraining.ipynb" afterPath="$PROJECT_DIR$/2_ModelTraining.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FinalProject.py" afterPath="$PROJECT_DIR$/FinalProject.py" />
     </list>
     <ignored path="FinalProject.iws" />
@@ -33,71 +96,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="myDeepNet.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/myDeepNet.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="599">
-              <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="FinalProject.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FinalProject.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="89" column="39" selection-start-line="89" selection-start-column="39" selection-end-line="89" selection-end-column="39" />
+            <state relative-caret-position="90">
+              <caret line="93" column="0" selection-start-line="93" selection-start-column="0" selection-end-line="93" selection-end-column="0" />
               <folding>
                 <element signature="e#47#64#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mnist_3.1_convolutional_bigger_dropout.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mnist_3.1_convolutional_bigger_dropout.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="83" column="36" selection-start-line="83" selection-start-column="36" selection-end-line="83" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FinalProjectBKP.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/FinalProjectBKP.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="144" column="22" selection-start-line="144" selection-start-column="0" selection-end-line="144" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FinalProject2.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/FinalProject2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2580">
-              <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FinalProject3.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/FinalProject3.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="180" column="44" selection-start-line="180" selection-start-column="44" selection-end-line="180" selection-end-column="44" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-                <element signature="e#149#360#0" expanded="false" />
-                <element signature="e#389#517#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -167,24 +172,7 @@
     <panes>
       <pane id="Scratches" />
       <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FinalProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FinalProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FinalProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+        <subPane />
       </pane>
       <pane id="Scope" />
     </panes>
@@ -449,12 +437,12 @@
     <frame x="65" y="24" width="1855" height="1072" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13477089" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22425877" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33901706" sideWeight="0.2884097" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33901706" sideWeight="0.29110512" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33901706" sideWeight="0.7115903" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33901706" sideWeight="0.7088949" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -467,6 +455,25 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21521522" sideWeight="0.49595687" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33901706" sideWeight="0.29110512" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33901706" sideWeight="0.7088949" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22425877" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21521522" sideWeight="0.49595687" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39919758" sideWeight="0.49380055" order="3" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -484,35 +491,11 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/FinalProject2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2580">
-          <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FinalProject3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#149#360#0" expanded="false" />
-            <element signature="e#389#517#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FinalProjectAux.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -520,9 +503,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -547,9 +528,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -557,9 +536,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -584,9 +561,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -594,9 +569,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -621,9 +594,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -631,9 +602,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -651,9 +620,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -661,9 +628,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -774,13 +739,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deepnet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FinalProject (copy).py" />
     <entry file="file://$USER_HOME$/anaconda2/lib/python2.7/site-packages/tensorflow/python/client/session.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -791,16 +749,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mydata/input_data.py" />
-    <entry file="file://$PROJECT_DIR$/FinalProject2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2580">
-          <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FinalProject4.py" />
     <entry file="file://$PROJECT_DIR$/original.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -813,27 +761,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="295">
           <caret line="380" column="12" selection-start-line="380" selection-start-column="12" selection-end-line="380" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FinalProject3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="180" column="44" selection-start-line="180" selection-start-column="44" selection-end-line="180" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#149#360#0" expanded="false" />
-            <element signature="e#389#517#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mnist_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="835">
-          <caret line="163" column="39" selection-start-line="163" selection-start-column="39" selection-end-line="163" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -841,26 +768,54 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="24" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myDeepNet.py">
+    <entry file="file://$PROJECT_DIR$/deepnet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="599">
-          <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="735">
+          <caret line="50" column="18" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FinalProject2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FinalProject3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="180" column="44" selection-start-line="180" selection-start-column="44" selection-end-line="180" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FinalProjectBKP.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="144" column="22" selection-start-line="144" selection-start-column="0" selection-end-line="144" selection-end-column="22" />
+        <state relative-caret-position="450">
+          <caret line="140" column="41" selection-start-line="140" selection-start-column="41" selection-end-line="140" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FinalProjectBKP2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/input_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-225">
+          <caret line="25" column="21" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
           <folding />
         </state>
       </provider>
@@ -873,10 +828,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/myDeepNet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="449">
+          <caret line="55" column="0" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mnist_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="142" column="21" selection-start-line="142" selection-start-column="21" selection-end-line="142" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/FinalProject.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="89" column="39" selection-start-line="89" selection-start-column="39" selection-end-line="89" selection-end-column="39" />
+        <state relative-caret-position="90">
+          <caret line="93" column="0" selection-start-line="93" selection-start-column="0" selection-end-line="93" selection-end-column="0" />
           <folding>
             <element signature="e#47#64#0" expanded="true" />
           </folding>

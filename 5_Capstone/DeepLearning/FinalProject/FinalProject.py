@@ -225,7 +225,7 @@ class DigitRecognition:
 
                         print "Test Results: EPOCH", str(n * 100 // self.mnist.train.images.shape[0] + 1) , "- Iteration:", str(n), "Accuracy:" + str(a) + " Test Loss: " + str(c)," - ", message
 
-                    # the backpropagation training step
+                    # the back propagation training step
                     sess.run(optimizer, {self.X: batch_X, self.Y_: batch_Y, self.lr: learning_rate, self.pkeep: 0.75})
 
         print "Training complete, max accuracy achieved:", str(maxAcc)

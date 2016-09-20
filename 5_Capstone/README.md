@@ -3,8 +3,6 @@
 ![](DeepLearning//images//cover.png)
 
 
-Deep Learning Project
-
 ## Install
 
 This project requires Python 2.7 and Tensorflow (https://dmenin.wordpress.com/2016/08/05/tensorflow-working-on-an-unbuntu-virtual-machine/)

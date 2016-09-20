@@ -107,8 +107,12 @@ class DigitRecognition:
         self.Y_ = tf.placeholder(tf.float32, [None, 10])
         W = tf.Variable(tf.zeros([784, 10]))
         b = tf.Variable(tf.zeros([10]))
+        ##add more layers here
         XX = tf.reshape(self.X, [-1, 784])
         self.Ylogits = tf.matmul(XX, W) + b
+
+
+
 
 
     def create_nn_model(self):
@@ -227,6 +231,7 @@ class DigitRecognition:
 
                     # the back propagation training step
                     sess.run(optimizer, {self.X: batch_X, self.Y_: batch_Y, self.lr: learning_rate, self.pkeep: 0.75})
+
 
         print "Training complete, max accuracy achieved:", str(maxAcc)
 
@@ -357,7 +362,8 @@ class DigitRecognition:
 # d = DigitRecognition()
 # d.LoadDataSet()
 # d.create_nn_model()
-# d.StartTraining(100)
+# #d.create_simple_model()
+# d.StartTraining(10000)
 
 # 3)TESTING
 # dTest = DigitRecognition()

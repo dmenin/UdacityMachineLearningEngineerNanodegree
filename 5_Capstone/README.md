@@ -1,4 +1,4 @@
-# Capstone Project:  Identifying Hand Written Digits (Deep Learning Project)
+# Identifying Hand Written Digits (Deep Learning Project)
 
 ![](DeepLearning//images//cover.png)
 
